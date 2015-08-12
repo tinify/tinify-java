@@ -228,7 +228,9 @@ public class SourceTest {
 
         server.takeRequest(5, TimeUnit.SECONDS);
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+
         Gson gson = new Gson();
+        @SuppressWarnings("unchecked")
         Map<String, Map<String, String>> body = gson.fromJson(request.getBody().readUtf8(), Map.class);
 
         Set<String> expectedSet = new HashSet<>();
