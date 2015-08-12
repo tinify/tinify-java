@@ -6,7 +6,7 @@
 
 Install the API client via Maven:
 
-```
+```xml
 <dependency>
   <groupId>com.tinify</groupId>
   <artifactId>tinify</artifactId>
