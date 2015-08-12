@@ -1,0 +1,39 @@
+[<img src="https://travis-ci.org/tinify/tinify-java.svg?branch=master" alt="Build Status">](https://travis-ci.org/tinify/tinify-java)
+
+# Tinify API client for Java
+
+## Installation
+
+Install the API client via Maven:
+
+```
+<dependency>
+  <groupId>com.tinify</groupId>
+  <artifactId>tinify</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+## Usage
+
+```java
+import com.tinify.*;
+import java.io.IOException;
+
+public class Compress {
+  public static void main(String[] args) throws java.io.IOException {
+    Tinify.setKey("YOUR_API_KEY");
+    Tinify.fromFile("input.png").toFile("output.png");
+  }
+}
+```
+
+## Running tests
+
+```
+mvn test
+```
+
+## License
+
+This software is licensed under the MIT License. [View the license](LICENSE).
