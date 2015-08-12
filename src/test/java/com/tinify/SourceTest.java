@@ -1,5 +1,6 @@
 package com.tinify;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
@@ -13,12 +14,15 @@ import java.io.IOException;
 import java.lang.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 public class SourceTest {
     MockWebServer server;
@@ -224,8 +228,13 @@ public class SourceTest {
 
         server.takeRequest(5, TimeUnit.SECONDS);
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
-        assertThat(request.getBody().readUtf8(),
-                is(equalTo("{\"resize\":{\"width\":100},\"store\":{\"service\":\"s3\"}}")));
+        Gson gson = new Gson();
+        Map<String, Map<String, String>> body = gson.fromJson(request.getBody().readUtf8(), Map.class);
+
+        Set<String> expectedSet = new HashSet<>();
+        expectedSet.add("resize");
+        expectedSet.add("store");
+        assertThat(body.keySet(), everyItem(isIn(expectedSet)));
     }
 
     @Test
