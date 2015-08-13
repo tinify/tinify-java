@@ -4,6 +4,7 @@ import java.io.IOException;
 
 public class Tinify {
     private static String key;
+    private static String appIdentifier;
     private static int compressionCount = 0;
     private static Client client;
 
@@ -15,7 +16,7 @@ public class Tinify {
             return client;
         } else {
             synchronized(Tinify.class) {
-                client = new Client(key());
+                client = new Client(key(), appIdentifier());
             }
             return client;
         }
@@ -23,6 +24,11 @@ public class Tinify {
 
     public static void setKey(final String key) {
         Tinify.key = key;
+        client = null;
+    }
+
+    public static void setAppIdentifier(final String identifier) {
+        Tinify.appIdentifier = identifier;
         client = null;
     }
 
@@ -45,6 +51,10 @@ public class Tinify {
 
     public static String key() {
         return key;
+    }
+
+    public static String appIdentifier() {
+        return appIdentifier;
     }
 
     public static void setCompressionCount(final int count) {

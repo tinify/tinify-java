@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Client {
     private OkHttpClient client;
     private String credentials;
+    private String userAgent;
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -22,9 +23,14 @@ public class Client {
         GET
     }
 
-    public Client(final String key) {
+    public Client(final String key, final String appIdentifier) {
         client = new OkHttpClient();
         credentials = Credentials.basic("api", key);
+        if (appIdentifier == null) {
+            userAgent = USER_AGENT;
+        } else {
+            userAgent = USER_AGENT + " " + appIdentifier;
+        }
     }
 
     public final Response request(final Method method, final String endpoint) throws Exception {
@@ -49,7 +55,7 @@ public class Client {
 
         Request request = new Request.Builder()
                 .header("Authorization", credentials)
-                .header("User-Agent", USER_AGENT)
+                .header("User-Agent", userAgent)
                 .url(url)
                 .method(method.toString(), body)
                 .build();

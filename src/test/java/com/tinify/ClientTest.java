@@ -34,7 +34,7 @@ public class ClientTest {
 
         server = new MockWebServer();
         server.start();
-        subject = new Client(key);
+        subject = new Client(key, null);
         new MockUp<HttpUrl>()
         {
             @Mock
@@ -130,7 +130,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(584)
                 .setBody("{'error':'InternalServerError','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ClientTest {
                 .setResponseCode(584)
                 .setBody("{'error':'InternalServerError','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 584/InternalServerError)", e.getMessage());
@@ -151,7 +151,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
     }
 
     @Test
@@ -160,7 +160,7 @@ public class ClientTest {
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Error while parsing response: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $ (HTTP 543/ParseError)", e.getMessage());
@@ -172,7 +172,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
     }
 
     @Test
@@ -181,7 +181,7 @@ public class ClientTest {
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 492/BadRequest)", e.getMessage());
@@ -193,7 +193,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
     }
 
     @Test
@@ -202,7 +202,7 @@ public class ClientTest {
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 401/Unauthorized)", e.getMessage());

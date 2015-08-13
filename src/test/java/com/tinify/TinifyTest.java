@@ -69,8 +69,17 @@ public class TinifyTest {
     }
 
     @Test
-    public void appIdentifierShouldResetClientWithNewAppIdentifier() {
+    public void appIdentifierShouldResetClientWithNewAppIdentifier() throws InterruptedException {
+        server.enqueue(new MockResponse().setResponseCode(200));
 
+        Tinify.setKey("abcde");
+        Tinify.setAppIdentifier("MyApp/1.0");
+        Tinify.client();
+        Tinify.setAppIdentifier("MyApp/2.0");
+        Tinify.client().request(Client.Method.GET, "/");
+
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals(Client.USER_AGENT + " MyApp/2.0", request.getHeader("User-Agent"));
     }
 
     @Test
