@@ -25,6 +25,7 @@ public class Client {
 
     public Client(final String key, final String appIdentifier) {
         client = new OkHttpClient();
+        client.setSslSocketFactory(SSLContext.getSocketFactory());
         credentials = Credentials.basic("api", key);
         if (appIdentifier == null) {
             userAgent = USER_AGENT;
