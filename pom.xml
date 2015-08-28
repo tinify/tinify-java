@@ -6,7 +6,7 @@
 
     <groupId>com.tinify</groupId>
     <artifactId>tinify</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>Tinify</name>
     <description>Java client for the Tinify API.</description>

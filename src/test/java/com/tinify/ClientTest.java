@@ -76,7 +76,7 @@ public class ClientTest {
     @Test
     public void requestShouldSendJSONBody() throws Exception, InterruptedException {
         enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new Options.Builder().add("hello", "world").build());
+        subject.request(Client.Method.POST, "/shrink", new Options().with("hello", "world"));
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         Gson gson = new Gson();
         assertEquals("world", gson.fromJson(request.getBody().readUtf8(), HashMap.class).get("hello"));

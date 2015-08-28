@@ -42,7 +42,7 @@ public class Tinify {
 
     public static boolean validate() {
         try {
-            client().request(Client.Method.POST, "/", new Options.Builder().build());
+            client().request(Client.Method.POST, "/", new Options());
         } catch (ClientException ex) {
             return true;
         }

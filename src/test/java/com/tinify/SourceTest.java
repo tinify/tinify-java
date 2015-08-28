@@ -161,7 +161,7 @@ public class SourceTest {
                 .setResponseCode(200)
                 .setBody("small file"));
 
-        Options options = new Options.Builder().add("width", 100).add("height", 60).build();
+        Options options = new Options().with("width", 100).with("height", 60);
 
         assertThat(Source.fromBuffer("png file".getBytes()).resize(options),
                 isA(Source.class));
@@ -179,7 +179,7 @@ public class SourceTest {
                 .setResponseCode(200)
                 .setBody("small file"));
 
-        Options options = new Options.Builder().add("width", 100).add("height", 60).build();
+        Options options = new Options().with("width", 100).with("height", 60);
 
         assertThat(Source.fromBuffer("png file".getBytes()).resize(options).toBuffer(),
                 is(equalTo("small file".getBytes())));
@@ -198,7 +198,7 @@ public class SourceTest {
                 .setResponseCode(200)
                 .addHeader("Location", "https://bucket.s3.amazonaws.com/example"));
 
-        Options options = new Options.Builder().add("service", "s3").build();
+        Options options = new Options().with("service", "s3");
 
         assertThat(Source.fromBuffer("png file".getBytes()).store(options),
                 isA(ResultMeta.class));
@@ -221,8 +221,8 @@ public class SourceTest {
                 .setResponseCode(200)
                 .addHeader("Location", "https://bucket.s3.amazonaws.com/example"));
 
-        Options resizeOptions = new Options.Builder().add("width", 100).build();
-        Options storeOptions =  new Options.Builder().add("service", "s3").build();
+        Options resizeOptions = new Options().with("width", 100);
+        Options storeOptions =  new Options().with("service", "s3");
 
         Source.fromBuffer("png file".getBytes()).resize(resizeOptions).store(storeOptions);
 
