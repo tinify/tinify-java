@@ -16,7 +16,9 @@ public class Tinify {
             return client;
         } else {
             synchronized(Tinify.class) {
-                client = new Client(key(), appIdentifier());
+                if (client == null) {
+                    client = new Client(key(), appIdentifier());
+                }
             }
             return client;
         }
