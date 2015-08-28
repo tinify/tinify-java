@@ -81,7 +81,7 @@ public class Client {
              try {
                  data = gson.fromJson(response.body().charStream(), Exception.Data.class);
             } catch (com.google.gson.JsonParseException e) {
-                 data = new Exception().new Data();
+                 data = new Exception.Data();
                  data.setMessage("Error while parsing response: " + e.getMessage());
                  data.setError("ParseError");
             } catch (IOException e) {

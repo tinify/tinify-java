@@ -1,7 +1,7 @@
 package com.tinify;
 
 public class Exception extends RuntimeException {
-    public class Data {
+    public static class Data {
         private String message;
         private String error;
 
