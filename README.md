@@ -2,6 +2,12 @@
 
 # Tinify API client for Java
 
+Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.
+
+## Documentation
+
+[Go to the documentation for the Java client](https://tinypng.com/developers/reference/java).
+
 ## Installation
 
 Install the API client via Maven:
