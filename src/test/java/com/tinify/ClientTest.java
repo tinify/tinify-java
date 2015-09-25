@@ -64,7 +64,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldSendApiKey() throws Exception, InterruptedException {
+    public void requestWhenValidShouldIssueRequest() throws Exception, InterruptedException {
         enqueuShrink();
         subject.request(Client.Method.POST, "/shrink", new byte[] {});
         String credentials = new String(Base64.encodeBase64(("api:" + key).getBytes()));
@@ -74,40 +74,16 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldSendJSONBody() throws Exception, InterruptedException {
-        enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new Options().with("hello", "world"));
-        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
-        Gson gson = new Gson();
-        assertEquals("world", gson.fromJson(request.getBody().readUtf8(), HashMap.class).get("hello"));
-        assertEquals("application/json; charset=utf-8", request.getHeader("Content-Type"));
-    }
-
-    @Test
-    public void requestShouldSendUserAgent() throws Exception, InterruptedException {
-        enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new byte[]{});
-        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
-        assertEquals(Client.USER_AGENT, request.getHeader("User-Agent"));
-    }
-
-    @Test
-    public void requestShouldSetCompressionCount() throws Exception {
-        enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new byte[]{});
-        assertEquals(12, Tinify.compressionCount());
-    }
-
-    @Test
-    public void requestShouldCallEndpoint() throws Exception, InterruptedException {
+    public void requestWhenValidShouldIssueRequestToEndpoint() throws Exception, InterruptedException {
         enqueuShrink();
         subject.request(Client.Method.POST, "/shrink", new byte[] {});
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals("/shrink", request.getPath());
+        assertEquals("POST", request.getMethod());
     }
 
     @Test
-    public void requestShouldCallWithMethod() throws Exception, InterruptedException {
+    public void requestWhenValidShouldIssueRequestWithMethod() throws Exception, InterruptedException {
         enqueuShrink();
         subject.request(Client.Method.POST, "/shrink", new byte[] {});
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
@@ -115,7 +91,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldReturnResponse() throws Exception, InterruptedException, IOException {
+    public void requestWhenValidShouldReturnResponse() throws Exception, InterruptedException, IOException {
         enqueuShrink();
 
         byte[] body = Files.readAllBytes(
@@ -125,8 +101,73 @@ public class ClientTest {
                 subject.request(Client.Method.POST, "/shrink", body).header("Location"));
     }
 
+    @Test
+    public void requestWhenValidShouldIssueRequestWithoutBodyWhenOptionsAreEmpty() throws Exception, InterruptedException {
+        enqueuShrink();
+        subject.request(Client.Method.GET, "/shrink", new Options());
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals(0, request.getBody().size());
+    }
+
+    @Test
+    public void requestWhenValidShouldIssueRequestWithoutContentTypeWhenOptionsAreEmpty() throws Exception, InterruptedException {
+        enqueuShrink();
+        subject.request(Client.Method.GET, "/shrink", new Options());
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals(null, request.getHeader("Content-Type"));
+    }
+
+    @Test
+    public void requestWhenValidShouldIssueRequestWithJSONBody() throws Exception, InterruptedException {
+        enqueuShrink();
+        subject.request(Client.Method.POST, "/shrink", new Options().with("hello", "world"));
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        Gson gson = new Gson();
+        assertEquals("world", gson.fromJson(request.getBody().readUtf8(), HashMap.class).get("hello"));
+        assertEquals("application/json; charset=utf-8", request.getHeader("Content-Type"));
+    }
+
+    @Test
+    public void requestWhenValidShouldIssueRequestWithUserAgent() throws Exception, InterruptedException {
+        enqueuShrink();
+        subject.request(Client.Method.POST, "/shrink", new byte[]{});
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals(Client.USER_AGENT, request.getHeader("User-Agent"));
+    }
+
+    @Test
+    public void requestWhenValidShouldUpdateCompressionCount() throws Exception {
+        enqueuShrink();
+        subject.request(Client.Method.POST, "/shrink", new byte[]{});
+        assertEquals(12, Tinify.compressionCount());
+    }
+
+    @Test
+    public void requestWhenValidWithAppIdShouldIssueRequestWithUserAgent() throws Exception, InterruptedException {
+        enqueuShrink();
+        Client client = new Client(key, "TestApp/0.1");
+        client.request(Client.Method.POST, "/shrink", new byte[] {});
+        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals(Client.USER_AGENT + " TestApp/0.1", request.getHeader("User-Agent"));
+    }
+
+    @SuppressWarnings("unused")
+    public void requestWithTimeout() {
+        // See ClientErrorTest.java
+    }
+
+    @SuppressWarnings("unused")
+    public void requestWithSocketException() {
+        // See ClientErrorTest.java
+    }
+
+    @SuppressWarnings("unused")
+    public void requestWithUnexpectedException() {
+        // See ClientErrorTest.java
+    }
+
     @Test(expected = ServerException.class)
-    public void requestShouldThrowServerException() throws Exception {
+    public void requestWithServerErrorShouldThrowServerException() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(584)
                 .setBody("{'error':'InternalServerError','message':'Oops!'}"));
@@ -134,7 +175,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldHaveMessageForServerException() throws Exception {
+    public void requestWithServerErrorShouldThrowExceptionWithMessage() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(584)
                 .setBody("{'error':'InternalServerError','message':'Oops!'}"));
@@ -147,7 +188,7 @@ public class ClientTest {
     }
 
     @Test(expected = ServerException.class)
-    public void requestShouldThrowServerExceptionForBadResponse() throws Exception {
+    public void requestWithBadServerResponseShouldThrowServerException() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
@@ -155,7 +196,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldHaveMessageForBadResponse() throws Exception {
+    public void requestWithBadServerResponseShouldThrowExceptionWithMessage() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
@@ -168,7 +209,7 @@ public class ClientTest {
     }
 
     @Test(expected = ClientException.class)
-    public void requestShouldThrowClientException() throws Exception {
+    public void requestWithClientErrorShouldThrowClientException() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
@@ -176,7 +217,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldHaveMessageForClientException() throws Exception {
+    public void requestWithClientErrorShouldThrowExceptionWithMessage() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
@@ -189,7 +230,7 @@ public class ClientTest {
     }
 
     @Test(expected = AccountException.class)
-    public void requestShouldThrowAccountExceptionForBadCredentials() throws Exception {
+    public void requestWithBadCredentialsShouldThrowAccountException() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));
@@ -197,7 +238,7 @@ public class ClientTest {
     }
 
     @Test
-    public void requestShouldHaveMessageForBadCredentials() throws Exception {
+    public void requestWithBadCredentialsShouldThrowExceptionWithMessage() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));

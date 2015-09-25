@@ -24,32 +24,68 @@ public class ResultTest {
     }
 
     @Test
-    public void widthShouldReturnImageWidth() {
+    public void withMetaAndDataWidthShouldReturnImageWidth() {
         assertThat(subject.width(), is(equalTo(100)));
     }
 
     @Test
-    public void heightShouldReturnImageHeight() {
+    public void withMetaAndDataHeightShouldReturnImageHeight() {
         assertThat(subject.height(), is(equalTo(60)));
     }
 
     @Test
-    public void locationShouldReturnNull() {
+    public void withMetaAndDataLocationShouldReturnNull() {
         assertThat(subject.location(), is(nullValue()));
     }
 
     @Test
-    public void sizeShouldReturnContentLength() {
+    public void withMetaAndDataSizeShouldReturnContentLength() {
         assertThat(subject.size(), is(equalTo(450)));
     }
 
     @Test
-    public void mediaTypeShouldReturnContentType() {
+    public void withMetaAndDataMediaTypeShouldReturnContentType() {
         assertThat(subject.mediaType(), is(equalTo("image/png")));
     }
 
     @Test
-    public void toBufferShouldReturnImageData() {
+    public void withMetaAndDataToBufferShouldReturnImageData() {
         assertThat(subject.toBuffer(), is(equalTo("image data".getBytes())));
+    }
+
+    @Test
+    public void withoutMetaAndDataWidthShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.width(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetadataHeightShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.height(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetadataLocationShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.location(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetadataSizeShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.size(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetadataContentTypeShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.mediaType(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetadataToBufferShouldReturnNull() {
+        subject = new Result(new HashMap<String, List<String>>(), null);
+        assertThat(subject.toBuffer(), is(nullValue()));
     }
 }

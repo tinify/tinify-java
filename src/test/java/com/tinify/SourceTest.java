@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -55,7 +56,7 @@ public class SourceTest {
     }
 
     @Test(expected = AccountException.class)
-    public void withInvalidApiKeyFromFileShouldThrow() throws Exception, IOException {
+    public void withInvalidApiKeyFromFileShouldThrowAccountException() throws Exception, IOException {
         Tinify.setKey("invalid");
 
         server.enqueue(new MockResponse()
@@ -66,7 +67,7 @@ public class SourceTest {
     }
 
     @Test(expected = AccountException.class)
-    public void withInvalidApiKeyFromBufferShouldThrow() throws Exception, IOException {
+    public void withInvalidApiKeyFromBufferShouldThrowAccountException() throws Exception, IOException {
         Tinify.setKey("invalid");
 
         server.enqueue(new MockResponse()
@@ -186,7 +187,7 @@ public class SourceTest {
     }
 
     @Test
-    public void withValidApiKeyStoreShouldReturnMetadata() throws Exception {
+    public void withValidApiKeyStoreShouldReturnResultMeta() throws Exception {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -205,7 +206,26 @@ public class SourceTest {
     }
 
     @Test
-    public void withValidApiKeyResizeAndStoreShouldBeChainable() throws Exception, IOException, InterruptedException {
+    public void withValidApiKeyStoreShouldReturnResultMetaWithLocation() throws Exception {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location")
+                .addHeader("Compression-Count", 12));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("Location", "https://bucket.s3.amazonaws.com/example"));
+
+        Options options = new Options().with("service", "s3");
+
+        assertEquals("https://bucket.s3.amazonaws.com/example",
+                Source.fromBuffer("png file".getBytes()).store(options).location());
+    }
+
+    @Test
+    public void withValidApiKeyStoreShouldIncludeResizeOptionsIfSet() throws Exception, IOException, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()

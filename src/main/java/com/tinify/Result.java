@@ -22,11 +22,13 @@ public class Result extends ResultMeta {
         return data;
     }
 
-    public final int size() {
+    public final Integer size() {
+        if (!meta.containsKey("Content-Length")) return null;
         return Integer.parseInt(meta.get("Content-Length").get(0));
     }
 
     public final String mediaType() {
+        if (!meta.containsKey("Content-Type")) return null;
         return meta.get("Content-Type").get(0);
     }
 }

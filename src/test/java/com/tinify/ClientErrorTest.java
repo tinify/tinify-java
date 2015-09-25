@@ -39,25 +39,65 @@ public class ClientErrorTest {
     }
 
     @Test(expected = ConnectionException.class)
-    public void shouldThrowConnectionError() throws Exception {
+    public void requestWithTimeoutShouldThrowConnectionException() throws Exception {
         new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.io.IOException(
-                    new java.net.SocketTimeoutException());
+            httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
         }};
         new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
     }
 
     @Test
-    public void shouldHaveMessageOnConnectionError() throws Exception {
+    public void requestWithTimeoutShouldThrowExceptionWithMessage() throws Exception {
         new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.io.IOException(
-                    new java.net.SocketTimeoutException());
+            httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
         }};
         try {
             new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
-        } catch (Exception e) {
-            assertEquals("Error while connecting: java.net.SocketTimeoutException", e.getMessage());
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: SocketTimeoutException", e.getMessage());
+        }
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void requestWithSocketErrorShouldThrowConnectionException() throws Exception {
+        new Expectations() {{
+            httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
+        }};
+        new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+    }
+
+    @Test
+    public void requestWithSocketErrorShouldThrowExceptionWithMessage() throws Exception {
+        new Expectations() {{
+            httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
+        }};
+        try {
+            new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+            fail("Expected an Exception to be thrown");
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: UnknownHostException", e.getMessage());
+        }
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void requestWithUnexpectedExceptionShouldThrowConnectionException() throws Exception {
+        new Expectations() {{
+            httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
+        }};
+        new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+    }
+
+    @Test
+    public void requestWithUnexpectedExceptionShouldThrowExceptionWithMessage() throws Exception {
+        new Expectations() {{
+            httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
+        }};
+        try {
+            new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+            fail("Expected an Exception to be thrown");
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: Some exception", e.getMessage());
         }
     }
 }

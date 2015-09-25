@@ -23,36 +23,36 @@ public class ResultMetaTest {
     }
 
     @Test
-    public void widthShouldReturnImageWidth() {
+    public void withMetadataWidthShouldReturnImageWidth() {
         assertThat(subject.width(), is(equalTo(100)));
     }
 
     @Test
-    public void widthWithMissingHeaderShouldReturnNull() {
+    public void withMetadataHeightShouldReturnImageHeight() {
+        assertThat(subject.height(), is(equalTo(60)));
+    }
+
+    @Test
+    public void withMetadataLocationShouldReturnLocation() {
+        assertThat(subject.location(), is(equalTo("https://example.com/image.png")));
+    }
+
+    @Test
+    public void withoutMetadataWidthShouldReturnNull() {
         Map<String, List<String>> meta = new HashMap<>();
         subject = new ResultMeta(meta);
         assertThat(subject.width(), is(nullValue()));
     }
 
     @Test
-    public void heightShouldReturnImageHeight() {
-        assertThat(subject.height(), is(equalTo(60)));
-    }
-
-    @Test
-    public void heightWithMissingHeaderShouldReturnNull() {
+    public void withoutMetadataHeightShouldReturnNull() {
         Map<String, List<String>> meta = new HashMap<>();
         subject = new ResultMeta(meta);
         assertThat(subject.height(), is(nullValue()));
     }
 
     @Test
-    public void locationShouldReturnLocation() {
-        assertThat(subject.location(), is(equalTo("https://example.com/image.png")));
-    }
-
-    @Test
-    public void locationWithMissingHeaderShouldReturnNull() {
+    public void withoutMetadataLocationShouldReturnNull() {
         Map<String, List<String>> meta = new HashMap<>();
         subject = new ResultMeta(meta);
         assertThat(subject.location(), is(nullValue()));

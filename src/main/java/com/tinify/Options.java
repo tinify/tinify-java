@@ -30,4 +30,8 @@ public final class Options {
         Gson gson = new Gson();
         return gson.toJson(this.options);
     }
+
+    public boolean isEmpty() {
+        return this.options.isEmpty();
+    }
 }

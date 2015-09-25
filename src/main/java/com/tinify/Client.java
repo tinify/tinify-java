@@ -3,6 +3,7 @@ package com.tinify;
 import com.google.gson.Gson;
 import com.squareup.okhttp.*;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
     private OkHttpClient client;
@@ -26,6 +27,10 @@ public class Client {
     public Client(final String key, final String appIdentifier) {
         client = new OkHttpClient();
         client.setSslSocketFactory(SSLContext.getSocketFactory());
+        client.setConnectTimeout(0, TimeUnit.SECONDS);
+        client.setReadTimeout(0, TimeUnit.SECONDS);
+        client.setWriteTimeout(0, TimeUnit.SECONDS);
+
         credentials = Credentials.basic("api", key);
         if (appIdentifier == null) {
             userAgent = USER_AGENT;
@@ -39,7 +44,11 @@ public class Client {
     }
 
     public final Response request(final Method method, final String endpoint, final Options options) throws Exception {
-        return request(method, endpoint, RequestBody.create(JSON, options.toJson()));
+        if (method.equals(Method.GET)) {
+            return request(method, endpoint, options.isEmpty() ? null : RequestBody.create(JSON, options.toJson()));
+        } else {
+            return request(method, endpoint, RequestBody.create(JSON, options.toJson()));
+        }
     }
 
     public final Response request(final Method method, final String endpoint, final byte[] body) throws Exception {
@@ -64,7 +73,7 @@ public class Client {
         Response response;
         try {
             response = client.newCall(request).execute();
-        } catch (IOException e) {
+        } catch (java.lang.Exception e) {
             throw new ConnectionException("Error while connecting: " + e.getMessage(), e);
         }
 
