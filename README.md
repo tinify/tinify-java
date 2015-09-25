@@ -40,6 +40,12 @@ public class Compress {
 mvn test
 ```
 
+### Integration tests
+
+```
+TINIFY_KEY=$YOUR_API_KEY mvn -Pintegration integration-test
+```
+
 ## License
 
 This software is licensed under the MIT License. [View the license](LICENSE).
