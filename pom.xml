@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.tinify</groupId>
     <artifactId>tinify</artifactId>
     <version>1.1.0</version>
-
     <name>Tinify</name>
     <description>Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.</description>
     <url>https://tinify.com</url>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
     <licenses>
         <license>
             <name>MIT License</name>
             <url>http://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
-
     <developers>
         <developer>
             <name>Jippe Holwerda</name>
@@ -32,20 +25,17 @@
             <organizationUrl>http://voormedia.com</organizationUrl>
         </developer>
     </developers>
-
     <scm>
         <connection>scm:git:https://github.com/tinify/tinify-java.git</connection>
         <developerConnection>scm:git:https://github.com/tinify/tinify-java.git</developerConnection>
         <url>scm:git:https://github.com/tinify/tinify-java.git</url>
     </scm>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
     <profiles>
         <profile>
             <id>release</id>
@@ -91,8 +81,35 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>integration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <includes>
+                                        <include>**/Integration.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
     <dependencies>
         <dependency>
             <groupId>com.squareup.okhttp</groupId>
@@ -135,7 +152,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
