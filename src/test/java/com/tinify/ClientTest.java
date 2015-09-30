@@ -59,7 +59,7 @@ public class ClientTest {
     public void enqueuShrink() {
         server.enqueue(new MockResponse()
                 .setResponseCode(201)
-                .addHeader("Location", "https://api.tinify.com/output/3spbi1cd7rs812lb.png")
+                .addHeader("Location", "https://api.tinify.com/foo.png")
                 .addHeader("Compression-Count", 12));
     }
 
@@ -97,7 +97,7 @@ public class ClientTest {
         byte[] body = Files.readAllBytes(
                 Paths.get(getClass().getResource("/example.png").getFile()));
 
-        assertEquals("https://api.tinify.com/output/3spbi1cd7rs812lb.png",
+        assertEquals("https://api.tinify.com/foo.png",
                 subject.request(Client.Method.POST, "/shrink", body).header("Location"));
     }
 

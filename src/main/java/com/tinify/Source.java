@@ -16,7 +16,7 @@ public class Source {
 
     public static Source fromBuffer(final byte[] buffer) {
         Response response = Tinify.client().request(Client.Method.POST, "/shrink", buffer);
-        return new Source(response.header("Location"), new Options());
+        return new Source(response.header("location"), new Options());
     }
 
     public Source(final String url, final Options commands) {
@@ -31,7 +31,7 @@ public class Source {
     public final ResultMeta store(Options options) {
         Response response = Tinify.client().request(
                 Client.Method.POST, url, new Options(commands).with("store", options));
-        return new ResultMeta(response.headers().toMultimap());
+        return new ResultMeta(response.headers());
     }
 
     public final Result result() throws IOException {
@@ -41,7 +41,7 @@ public class Source {
         } else {
             response = Tinify.client().request(Client.Method.POST, url, commands);
         }
-        return new Result(response.headers().toMultimap(), response.body().bytes());
+        return new Result(response.headers(), response.body().bytes());
     }
 
     public void toFile(final String path) throws IOException {

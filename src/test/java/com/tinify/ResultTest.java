@@ -3,24 +3,24 @@ package com.tinify;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import com.squareup.okhttp.Headers;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 public class ResultTest {
-    Map<String, List<String>> meta;
     Result subject;
 
     @Before
     public void setup() {
-        meta = new HashMap<>();
-        meta.put("Image-Width", new ArrayList<>(Arrays.asList("100")));
-        meta.put("Image-Height", new ArrayList<>(Arrays.asList("60")));
-        meta.put("Content-Length", new ArrayList<>(Arrays.asList("450")));
-        meta.put("Content-Type", new ArrayList<>(Arrays.asList("image/png")));
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("Image-Width", "100");
+        meta.put("Image-Height", "60");
+        meta.put("Content-Length", "450");
+        meta.put("Content-Type", "image/png");
 
-        subject = new Result(meta, "image data".getBytes());
+        subject = new Result(Headers.of(meta), "image data".getBytes());
     }
 
     @Test
@@ -55,37 +55,37 @@ public class ResultTest {
 
     @Test
     public void withoutMetaAndDataWidthShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.width(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataHeightShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.height(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataLocationShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.location(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataSizeShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.size(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataContentTypeShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.mediaType(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataToBufferShouldReturnNull() {
-        subject = new Result(new HashMap<String, List<String>>(), null);
+        subject = new Result(Headers.of(), null);
         assertThat(subject.toBuffer(), is(nullValue()));
     }
 }

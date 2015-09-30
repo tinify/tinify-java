@@ -3,13 +3,12 @@ package com.tinify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import com.squareup.okhttp.Headers;
 
 public class Result extends ResultMeta {
     private final byte[] data;
 
-    public Result(final Map<String, List<String>> meta, final byte[] data) {
+    public Result(final Headers meta, final byte[] data) {
         super(meta);
         this.data = data;
     }
@@ -23,12 +22,11 @@ public class Result extends ResultMeta {
     }
 
     public final Integer size() {
-        if (!meta.containsKey("Content-Length")) return null;
-        return Integer.parseInt(meta.get("Content-Length").get(0));
+        String value = meta.get("content-length");
+        return (value == null) ? null : Integer.parseInt(value);
     }
 
     public final String mediaType() {
-        if (!meta.containsKey("Content-Type")) return null;
-        return meta.get("Content-Type").get(0);
+        return meta.get("content-type");
     }
 }

@@ -32,7 +32,11 @@ public class Integration {
         Path tempFile = Files.createTempFile("tinify_", null);
         tempFile.toFile().deleteOnExit();
 
-        optimized.toFile(tempFile.toString());
+        Result result = optimized.result();
+        result.toFile(tempFile.toString());
+
+        assertThat(result.width(), is(equalTo(137)));
+        assertThat(result.height(), is(equalTo(21)));
 
         long size = new File(tempFile.toString()).length();
         assertThat(size, greaterThan((long) 0));
@@ -48,7 +52,11 @@ public class Integration {
             .with("method", "fit")
             .with("width", 50)
             .with("height", 20);
-        optimized.resize(options).toFile(tempFile.toString());
+        Result result = optimized.resize(options).result();
+        result.toFile(tempFile.toString());
+
+        assertThat(result.width(), is(equalTo(50)));
+        assertThat(result.height(), is(equalTo(8)));
 
         long size = new File(tempFile.toString()).length();
         assertThat(size, greaterThan((long) 0));

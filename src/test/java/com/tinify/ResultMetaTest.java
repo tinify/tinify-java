@@ -3,23 +3,23 @@ package com.tinify;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import com.squareup.okhttp.Headers;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
 public class ResultMetaTest {
-
     ResultMeta subject;
 
     @Before
     public void setup() {
-        Map<String, List<String>> meta = new HashMap<>();
-        meta.put("Image-Width", new ArrayList<>(Arrays.asList("100")));
-        meta.put("Image-Height", new ArrayList<>(Arrays.asList("60")));
-        meta.put("Location", new ArrayList<>(Arrays.asList("https://example.com/image.png")));
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("Image-Width", "100");
+        meta.put("Image-Height", "60");
+        meta.put("Location", "https://example.com/image.png");
 
-        subject = new ResultMeta(meta);
+        subject = new ResultMeta(Headers.of(meta));
     }
 
     @Test
@@ -39,22 +39,19 @@ public class ResultMetaTest {
 
     @Test
     public void withoutMetadataWidthShouldReturnNull() {
-        Map<String, List<String>> meta = new HashMap<>();
-        subject = new ResultMeta(meta);
+        subject = new ResultMeta(Headers.of());
         assertThat(subject.width(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataHeightShouldReturnNull() {
-        Map<String, List<String>> meta = new HashMap<>();
-        subject = new ResultMeta(meta);
+        subject = new ResultMeta(Headers.of());
         assertThat(subject.height(), is(nullValue()));
     }
 
     @Test
     public void withoutMetadataLocationShouldReturnNull() {
-        Map<String, List<String>> meta = new HashMap<>();
-        subject = new ResultMeta(meta);
+        subject = new ResultMeta(Headers.of());
         assertThat(subject.location(), is(nullValue()));
     }
 }
