@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.*;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,7 +128,7 @@ public class TinifyTest {
     }
 
     @Test
-    public void fromFileShouldReturnSource() throws IOException {
+    public void fromFileShouldReturnSource() throws IOException, URISyntaxException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -134,7 +136,7 @@ public class TinifyTest {
                 .addHeader("Location", "https://api.tinify.com/some/location")
                 .addHeader("Compression-Count", 12));
 
-        assertThat(Tinify.fromFile(getClass().getResource("/dummy.png").getFile()),
-                isA(Source.class));
+        String filePath = Paths.get(getClass().getResource("/dummy.png").toURI()).toAbsolutePath().toString();
+        assertThat(Tinify.fromFile(filePath), isA(Source.class));
     }
 }
