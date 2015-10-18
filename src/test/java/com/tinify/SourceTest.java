@@ -12,8 +12,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -56,14 +58,15 @@ public class SourceTest {
     }
 
     @Test(expected = AccountException.class)
-    public void withInvalidApiKeyFromFileShouldThrowAccountException() throws Exception, IOException {
+    public void withInvalidApiKeyFromFileShouldThrowAccountException() throws Exception, IOException, URISyntaxException {
         Tinify.setKey("invalid");
 
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Credentials are invalid'}"));
 
-        Source.fromFile(getClass().getResource("/dummy.png").getFile());
+        String filePath = Paths.get(getClass().getResource("/dummy.png").toURI()).toAbsolutePath().toString();
+        Source.fromFile(filePath);
     }
 
     @Test(expected = AccountException.class)
@@ -78,7 +81,7 @@ public class SourceTest {
     }
 
     @Test
-    public void withValidApiKeyFromFileShouldReturnSource() throws IOException, Exception {
+    public void withValidApiKeyFromFileShouldReturnSource() throws IOException, Exception, URISyntaxException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -86,11 +89,12 @@ public class SourceTest {
                 .addHeader("Location", "https://api.tinify.com/some/location")
                 .addHeader("Compression-Count", 12));
 
-        assertThat(Source.fromFile(getClass().getResource("/dummy.png").getFile()), isA(Source.class));
+        String filePath = Paths.get(getClass().getResource("/dummy.png").toURI()).toAbsolutePath().toString();
+        assertThat(Source.fromFile(filePath), isA(Source.class));
     }
 
     @Test
-    public void withValidApiKeyFromFileShouldReturnSourceWithData() throws IOException, Exception {
+    public void withValidApiKeyFromFileShouldReturnSourceWithData() throws IOException, Exception, URISyntaxException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -101,8 +105,8 @@ public class SourceTest {
                 .setResponseCode(200)
                 .setBody("compressed file"));
 
-        assertThat(Source.fromFile(getClass().getResource("/dummy.png").getFile()).toBuffer(),
-                is(equalTo("compressed file".getBytes())));
+        String filePath = Paths.get(getClass().getResource("/dummy.png").toURI()).toAbsolutePath().toString();
+        assertThat(Source.fromFile(filePath).toBuffer(), is(equalTo("compressed file".getBytes())));
     }
 
     @Test

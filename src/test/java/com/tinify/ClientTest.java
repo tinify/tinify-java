@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -91,11 +92,11 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWhenValidShouldReturnResponse() throws Exception, InterruptedException, IOException {
+    public void requestWhenValidShouldReturnResponse() throws Exception, InterruptedException, IOException, URISyntaxException {
         enqueuShrink();
 
         byte[] body = Files.readAllBytes(
-                Paths.get(getClass().getResource("/example.png").getFile()));
+                Paths.get(getClass().getResource("/example.png").toURI()));
 
         assertEquals("https://api.tinify.com/foo.png",
                 subject.request(Client.Method.POST, "/shrink", body).header("Location"));

@@ -3,9 +3,11 @@ package com.tinify;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -14,7 +16,7 @@ public class Integration {
     private static Source optimized;
 
     @BeforeClass
-    public static void setup() throws java.io.IOException {
+    public static void setup() throws java.io.IOException, URISyntaxException {
         String key = System.getenv().get("TINIFY_KEY");
         if (key == null) {
             System.out.println("Set the TINIFY_KEY environment variable.");
@@ -23,7 +25,7 @@ public class Integration {
 
         Tinify.setKey(key);
 
-        String unoptimizedPath = Integration.class.getResource("/voormedia.png").getFile();
+        String unoptimizedPath = Paths.get(Integration.class.getResource("/voormedia.png").toURI()).toAbsolutePath().toString();
         optimized = Tinify.fromFile(unoptimizedPath);
     }
 
