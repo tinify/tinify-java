@@ -2,7 +2,7 @@
 
 # Tinify API client for Java
 
-Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.
+Java client for the Tinify API, used by [TinyPNG](https://tinypng.com) and [TinyJPG](https://tinyjpg.com). Tinify compresses your images intelligently. Read more at [https://tinify.com](https://tinify.com).
 
 ## Documentation
 
