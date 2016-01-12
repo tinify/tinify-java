@@ -30,7 +30,7 @@ public class Integration {
     }
 
     @Test
-    public void shouldCompress() throws java.lang.Exception {
+    public void shouldCompressFromFile() throws java.lang.Exception {
         Path tempFile = Files.createTempFile("tinify_", null);
         tempFile.toFile().deleteOnExit();
 
@@ -63,5 +63,23 @@ public class Integration {
         long size = new File(tempFile.toString()).length();
         assertThat(size, greaterThan((long) 0));
         assertThat(size, lessThan((long) 800));
+    }
+
+    @Test
+    public void shouldCompressFromUrl() throws java.lang.Exception {
+        Path tempFile = Files.createTempFile("tinify_", null);
+        tempFile.toFile().deleteOnExit();
+
+        optimized = Tinify.fromUrl("https://raw.githubusercontent.com/tinify/tinify-java/master/src/test/resources/voormedia.png");
+
+        Result result = optimized.result();
+        result.toFile(tempFile.toString());
+
+        assertThat(result.width(), is(equalTo(137)));
+        assertThat(result.height(), is(equalTo(21)));
+
+        long size = new File(tempFile.toString()).length();
+        assertThat(size, greaterThan((long) 0));
+        assertThat(size, lessThan((long) 1500));
     }
 }
