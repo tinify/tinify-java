@@ -19,6 +19,12 @@ public class Source {
         return new Source(response.header("location"), new Options());
     }
 
+    public static Source fromUrl(final String url) {
+        Options body = new Options().with("source", new Options().with("url", url));
+        Response response = Tinify.client().request(Client.Method.POST, "/shrink", body);
+        return new Source(response.header("location"), new Options());
+    }
+
     public Source(final String url, final Options commands) {
         this.url = url;
         this.commands = commands;

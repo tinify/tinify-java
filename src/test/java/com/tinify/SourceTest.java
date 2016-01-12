@@ -80,6 +80,17 @@ public class SourceTest {
         Source.fromBuffer("png file".getBytes());
     }
 
+    @Test(expected = AccountException.class)
+    public void withInvalidApiKeyFromUrlShouldThrowAccountException() throws Exception, IOException {
+        Tinify.setKey("invalid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(401)
+                .setBody("{'error':'Unauthorized','message':'Credentials are invalid'}"));
+
+        Source.fromUrl("http://example.com/test.jpg");
+    }
+
     @Test
     public void withValidApiKeyFromFileShouldReturnSource() throws IOException, Exception, URISyntaxException {
         Tinify.setKey("valid");
@@ -136,6 +147,46 @@ public class SourceTest {
         assertThat(Source.fromBuffer("png file".getBytes()).toBuffer(),
                 is(equalTo("compressed file".getBytes())));
     }
+
+    @Test
+    public void withValidApiKeyFromUrlShouldReturnSource() throws IOException, Exception {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location")
+                .addHeader("Compression-Count", 12));
+
+        assertThat(Source.fromUrl("http://example.com/test.jpg"), isA(Source.class));
+    }
+
+    @Test
+    public void withValidApiKeyFromUrlShouldReturnSourceWithData() throws IOException, Exception {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("compressed file"));
+
+        assertThat(Source.fromUrl("http://example.com/test.jpg").toBuffer(),
+                is(equalTo("compressed file".getBytes())));
+    }
+
+    @Test(expected = ClientException.class)
+    public void withValidApiKeyFromUrlShouldThrowExceptionIfRequestIsNotOK() throws IOException, Exception {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(400)
+                .setBody("{'error':'Source not found','message':'Cannot parse URL'}"));
+
+        Source.fromUrl("file://wrong");
+    }
+
 
     @Test
     public void withValidApiKeyResultShouldReturnResult() throws Exception, IOException {

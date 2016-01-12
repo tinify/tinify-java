@@ -42,6 +42,10 @@ public class Tinify {
         return Source.fromBuffer(buffer);
     }
 
+    public static Source fromUrl(final String url) {
+        return Source.fromUrl(url);
+    }
+
     public static boolean validate() {
         try {
             client().request(Client.Method.POST, "/", new Options());
