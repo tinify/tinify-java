@@ -62,7 +62,7 @@ public class Integration {
 
         long size = new File(tempFile.toString()).length();
         assertThat(size, greaterThan((long) 0));
-        assertThat(size, lessThan((long) 800));
+        assertThat(size, lessThan((long) 1000));
     }
 
     @Test
