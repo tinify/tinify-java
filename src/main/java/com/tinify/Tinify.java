@@ -48,7 +48,7 @@ public class Tinify {
 
     public static boolean validate() {
         try {
-            client().request(Client.Method.POST, "/", new Options());
+            client().request(Client.Method.POST, "/shrink");
         } catch (ClientException ex) {
             return true;
         }

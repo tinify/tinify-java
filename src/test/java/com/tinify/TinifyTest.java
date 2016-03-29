@@ -37,13 +37,13 @@ public class TinifyTest {
         {
             @Mock
             @SuppressWarnings("unused")
-            HttpUrl parse(String input)
+            HttpUrl parse(String url)
             {
                 return new HttpUrl.Builder()
                         .scheme("http")
                         .host(server.getHostName())
                         .port(server.getPort())
-                        .encodedPath("/")
+                        .encodedPath(url.replaceFirst(Client.API_ENDPOINT, ""))
                         .build();
             }
         };
@@ -96,23 +96,31 @@ public class TinifyTest {
     }
 
     @Test
-    public void validateWithValidKeyShouldReturnTrue() {
+    public void validateWithValidKeyShouldReturnTrue() throws InterruptedException {
         server.enqueue(new MockResponse()
                 .setResponseCode(400)
                 .setBody("{'error':'InputMissing','message':'No input'}"));
 
         Tinify.setKey("valid");
         assertThat(Tinify.validate(), is(true));
+
+        RecordedRequest request = server.takeRequest();
+        assertEquals("POST /shrink HTTP/1.1", request.getRequestLine());
+        assertEquals(0, request.getBody().size());
     }
 
     @Test(expected = AccountException.class)
-    public void validateWithErrorShouldThrowException() {
+    public void validateWithErrorShouldThrowException() throws InterruptedException {
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Credentials are invalid'}"));
 
         Tinify.setKey("invalid");
         Tinify.validate();
+
+        RecordedRequest request = server.takeRequest();
+        assertEquals("POST /shrink HTTP/1.1", request.getRequestLine());
+        assertEquals(0, request.getBody().size());
     }
 
     @Test
