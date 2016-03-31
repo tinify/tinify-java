@@ -30,6 +30,10 @@ public class Source {
         this.commands = commands;
     }
 
+    public final Source preserve(final String... options) {
+        return new Source(url, new Options(commands).with("preserve", options));
+    }
+
     public final Source resize(Options options) {
         return new Source(url, new Options(commands).with("resize", options));
     }

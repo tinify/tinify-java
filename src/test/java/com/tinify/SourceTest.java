@@ -161,7 +161,7 @@ public class SourceTest {
     }
 
     @Test
-    public void withValidApiKeyFromUrlShouldReturnSourceWithData() throws IOException, Exception {
+    public void withValidApiKeyFromUrlShouldReturnSourceWithData() throws IOException, Exception, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -174,6 +174,9 @@ public class SourceTest {
 
         assertThat(Source.fromUrl("http://example.com/test.jpg").toBuffer(),
                 is(equalTo("compressed file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"source\":{\"url\":\"http://example.com/test.jpg\"}}", request1.getBody().readUtf8());
     }
 
     @Test(expected = ClientException.class)
@@ -186,7 +189,6 @@ public class SourceTest {
 
         Source.fromUrl("file://wrong");
     }
-
 
     @Test
     public void withValidApiKeyResultShouldReturnResult() throws Exception, IOException {
@@ -202,11 +204,99 @@ public class SourceTest {
                 .setBody("compressed file"));
 
         assertThat(Source.fromBuffer("png file".getBytes()).result(),
-                isA(Result.class));
+               isA(Result.class));
     }
 
     @Test
-    public void withValidApiKeyResizeShouldReturnSource() throws Exception {
+    public void withValidApiKeyPreserveShouldReturnSource() throws Exception, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("copyrighted file"));
+
+        assertThat(Source.fromBuffer("png file".getBytes()).preserve("copyright", "location"),
+               isA(Source.class));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+    }
+
+    @Test
+    public void withValidApiKeyPreserveShouldReturnSourceWithData() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("copyrighted file"));
+
+        assertThat(Source.fromBuffer("png file".getBytes()).preserve("copyright", "location").toBuffer(),
+                is(equalTo("copyrighted file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+    }
+
+    @Test
+    public void withValidApiKeyPreserveShouldReturnSourceWithDataForArray() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("copyrighted file"));
+
+        String[] options = new String [] {"copyright", "location"};
+        assertThat(Source.fromBuffer("png file".getBytes()).preserve(options).toBuffer(),
+                is(equalTo("copyrighted file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+    }
+
+    @Test
+    public void withValidApiKeyPreserveShouldIncludeOtherOptionsIfSet() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("copyrighted resized file"));
+
+        Options resizeOptions = new Options().with("width", 100).with("height", 60);
+        String[] preserveOptions = new String [] {"copyright", "location"};
+        assertThat(Source.fromBuffer("png file".getBytes()).resize(resizeOptions).preserve(preserveOptions).toBuffer(),
+                is(equalTo("copyrighted resized file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"resize\":{\"width\":100,\"height\":60},\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+    }
+
+    @Test
+    public void withValidApiKeyResizeShouldReturnSource() throws Exception, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -220,11 +310,14 @@ public class SourceTest {
         Options options = new Options().with("width", 100).with("height", 60);
 
         assertThat(Source.fromBuffer("png file".getBytes()).resize(options),
-                isA(Source.class));
+               isA(Source.class));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
     }
 
     @Test
-    public void withValidApiKeyResizeShouldReturnSourceWithData() throws Exception, IOException {
+    public void withValidApiKeyResizeShouldReturnSourceWithData() throws Exception, IOException, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -239,10 +332,16 @@ public class SourceTest {
 
         assertThat(Source.fromBuffer("png file".getBytes()).resize(options).toBuffer(),
                 is(equalTo("small file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"resize\":{\"width\":100,\"height\":60}}", request2.getBody().readUtf8());
     }
 
     @Test
-    public void withValidApiKeyStoreShouldReturnResultMeta() throws Exception {
+    public void withValidApiKeyStoreShouldReturnResultMeta() throws Exception, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -257,11 +356,17 @@ public class SourceTest {
         Options options = new Options().with("service", "s3");
 
         assertThat(Source.fromBuffer("png file".getBytes()).store(options),
-                isA(ResultMeta.class));
+               isA(ResultMeta.class));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
-    public void withValidApiKeyStoreShouldReturnResultMetaWithLocation() throws Exception {
+    public void withValidApiKeyStoreShouldReturnResultMetaWithLocation() throws Exception, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -277,10 +382,16 @@ public class SourceTest {
 
         assertEquals("https://bucket.s3.amazonaws.com/example",
                 Source.fromBuffer("png file".getBytes()).store(options).location());
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
-    public void withValidApiKeyStoreShouldIncludeResizeOptionsIfSet() throws Exception, IOException, InterruptedException {
+    public void withValidApiKeyStoreShouldIncludeOtherOptionsIfSet() throws Exception, IOException, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -301,17 +412,11 @@ public class SourceTest {
 
         Source.fromBuffer("png file".getBytes()).resize(resizeOptions).store(storeOptions);
 
-        server.takeRequest(5, TimeUnit.SECONDS);
-        RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
 
-        Gson gson = new Gson();
-        @SuppressWarnings("unchecked")
-        Map<String, Map<String, String>> body = gson.fromJson(request.getBody().readUtf8(), Map.class);
-
-        Set<String> expectedSet = new HashSet<>();
-        expectedSet.add("resize");
-        expectedSet.add("store");
-        assertThat(body.keySet(), everyItem(isIn(expectedSet)));
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("{\"resize\":{\"width\":100},\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
