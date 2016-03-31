@@ -57,6 +57,16 @@ public class SourceTest {
         server.shutdown();
     }
 
+    public void assertJsonEquals(String expected, String actual)
+    {
+        Gson gson = new Gson();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> expectedMap = gson.fromJson(expected, Map.class);
+        Map<String, Object> actualMap = gson.fromJson(actual, Map.class);
+
+        assertEquals(expectedMap, actualMap);
+    }
+
     @Test(expected = AccountException.class)
     public void withInvalidApiKeyFromFileShouldThrowAccountException() throws Exception, IOException, URISyntaxException {
         Tinify.setKey("invalid");
@@ -176,7 +186,7 @@ public class SourceTest {
                 is(equalTo("compressed file".getBytes())));
 
         RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"source\":{\"url\":\"http://example.com/test.jpg\"}}", request1.getBody().readUtf8());
+        assertJsonEquals("{\"source\":{\"url\":\"http://example.com/test.jpg\"}}", request1.getBody().readUtf8());
     }
 
     @Test(expected = ClientException.class)
@@ -245,7 +255,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -268,7 +278,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -292,7 +302,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"resize\":{\"width\":100,\"height\":60},\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"resize\":{\"width\":100,\"height\":60},\"preserve\":[\"copyright\",\"location\"]}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -337,7 +347,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"resize\":{\"width\":100,\"height\":60}}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"resize\":{\"width\":100,\"height\":60}}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -362,7 +372,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -387,7 +397,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
@@ -416,7 +426,7 @@ public class SourceTest {
         assertEquals("png file", request1.getBody().readUtf8());
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
-        assertEquals("{\"resize\":{\"width\":100},\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
+        assertJsonEquals("{\"resize\":{\"width\":100},\"store\":{\"service\":\"s3\"}}", request2.getBody().readUtf8());
     }
 
     @Test
