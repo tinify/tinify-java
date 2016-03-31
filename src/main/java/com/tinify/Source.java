@@ -34,11 +34,11 @@ public class Source {
         return new Source(url, new Options(commands).with("preserve", options));
     }
 
-    public final Source resize(Options options) {
+    public final Source resize(final Options options) {
         return new Source(url, new Options(commands).with("resize", options));
     }
 
-    public final ResultMeta store(Options options) {
+    public final ResultMeta store(final Options options) {
         Response response = Tinify.client().request(
                 Client.Method.POST, url, new Options(commands).with("store", options));
         return new ResultMeta(response.headers());
