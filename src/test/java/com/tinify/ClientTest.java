@@ -96,7 +96,7 @@ public class ClientTest {
         enqueuShrink();
 
         byte[] body = Files.readAllBytes(
-                Paths.get(getClass().getResource("/example.png").toURI()));
+                Paths.get(getClass().getResource("/voormedia.png").toURI()));
 
         assertEquals("https://api.tinify.com/foo.png",
                 subject.request(Client.Method.POST, "/shrink", body).header("Location"));

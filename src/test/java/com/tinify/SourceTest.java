@@ -62,6 +62,7 @@ public class SourceTest {
         Gson gson = new Gson();
         @SuppressWarnings("unchecked")
         Map<String, Object> expectedMap = gson.fromJson(expected, Map.class);
+        @SuppressWarnings("unchecked")
         Map<String, Object> actualMap = gson.fromJson(actual, Map.class);
 
         assertEquals(expectedMap, actualMap);
