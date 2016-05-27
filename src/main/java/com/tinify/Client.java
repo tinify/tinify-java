@@ -92,7 +92,7 @@ public class Client {
         } else {
             Exception.Data data;
             Gson gson = new Gson();
-             try {
+            try {
                  data = gson.fromJson(response.body().charStream(), Exception.Data.class);
             } catch (com.google.gson.JsonParseException e) {
                  data = new Exception.Data();

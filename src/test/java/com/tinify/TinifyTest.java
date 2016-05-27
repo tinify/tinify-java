@@ -99,7 +99,21 @@ public class TinifyTest {
     public void validateWithValidKeyShouldReturnTrue() throws InterruptedException {
         server.enqueue(new MockResponse()
                 .setResponseCode(400)
-                .setBody("{'error':'InputMissing','message':'No input'}"));
+                .setBody("{'error':'Input missing','message':'No input'}"));
+
+        Tinify.setKey("valid");
+        assertThat(Tinify.validate(), is(true));
+
+        RecordedRequest request = server.takeRequest();
+        assertEquals("POST /shrink HTTP/1.1", request.getRequestLine());
+        assertEquals(0, request.getBody().size());
+    }
+
+    @Test
+    public void validateWithLimitedKeyShouldReturnTrue() throws InterruptedException {
+        server.enqueue(new MockResponse()
+                .setResponseCode(429)
+                .setBody("{'error':'Too many requests','message':'Your monthly limit has been exceeded'}"));
 
         Tinify.setKey("valid");
         assertThat(Tinify.validate(), is(true));

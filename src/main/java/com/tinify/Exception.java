@@ -34,19 +34,26 @@ public class Exception extends RuntimeException {
         }
     }
 
+    int status = 0;
+
     public Exception() {
         super();
     }
+
     public Exception(final Throwable t) {
         super(t);
     }
+
     public Exception(final String message) {
         super(message);
     }
+
     public Exception(final String message, final Throwable t) {
         super(message, t);
     }
+
     public Exception(final String message, final String type, final int status) {
         super(message + " (HTTP " + status + "/" + type + ")");
+        this.status = status;
     }
 }
