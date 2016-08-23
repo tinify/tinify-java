@@ -197,6 +197,19 @@ public class ClientTest {
     }
 
     @Test
+    public void requestWithBlankServerResponseShouldThrowServerException() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(543)
+                .setBody(""));
+        try {
+            new Client(key, null).request(Client.Method.POST, "/shrink", new byte[] {});
+            fail("Expected an Exception to be thrown");
+        } catch (Exception e) {
+            assertEquals("Error while parsing response: received empty body (HTTP 543/ParseError)", e.getMessage());
+        }
+    }
+
+    @Test
     public void requestWithBadServerResponseShouldThrowExceptionWithMessage() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(543)

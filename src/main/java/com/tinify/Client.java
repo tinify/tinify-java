@@ -94,13 +94,19 @@ public class Client {
             Gson gson = new Gson();
             try {
                  data = gson.fromJson(response.body().charStream(), Exception.Data.class);
+                 if (data == null) {
+                     data = new Exception.Data();
+                     data.setMessage("Error while parsing response: received empty body");
+                     data.setError("ParseError");
+                 }
             } catch (com.google.gson.JsonParseException e) {
                  data = new Exception.Data();
                  data.setMessage("Error while parsing response: " + e.getMessage());
                  data.setError("ParseError");
             } catch (IOException e) {
                  throw new Exception(e);
-             }
+            }
+
             throw Exception.create(
                     data.getMessage(),
                     data.getError(),
