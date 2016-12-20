@@ -29,6 +29,7 @@ import java.io.IOException;
 public class Compress {
   public static void main(String[] args) throws java.io.IOException {
     Tinify.setKey("YOUR_API_KEY");
+    Tinify.setProxy("http://proxy.internal.example.com") // If applicable
     Tinify.fromFile("input.png").toFile("output.png");
   }
 }
