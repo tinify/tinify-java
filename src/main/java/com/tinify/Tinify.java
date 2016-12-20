@@ -5,6 +5,7 @@ import java.io.IOException;
 public class Tinify {
     private static String key;
     private static String appIdentifier;
+    private static String proxy;
     private static int compressionCount = 0;
     private static Client client;
 
@@ -17,7 +18,7 @@ public class Tinify {
         } else {
             synchronized(Tinify.class) {
                 if (client == null) {
-                    client = new Client(key(), appIdentifier());
+                    client = new Client(key(), appIdentifier(), proxy);
                 }
             }
             return client;
@@ -26,6 +27,11 @@ public class Tinify {
 
     public static void setKey(final String key) {
         Tinify.key = key;
+        client = null;
+    }
+
+    public static void setProxy(final String proxy) {
+        Tinify.proxy = proxy;
         client = null;
     }
 
@@ -60,6 +66,10 @@ public class Tinify {
 
     public static String key() {
         return key;
+    }
+
+    public static String proxy() {
+      return proxy;
     }
 
     public static String appIdentifier() {

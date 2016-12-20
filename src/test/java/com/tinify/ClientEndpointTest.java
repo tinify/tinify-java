@@ -22,7 +22,7 @@ public class ClientEndpointTest {
 
     @Before
     public void setup() throws IOException {
-        subject = new Client(key, null);
+        subject = new Client(key, null, null);
     }
 
     @Test

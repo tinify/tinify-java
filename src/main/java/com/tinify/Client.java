@@ -3,6 +3,10 @@ package com.tinify;
 import com.google.gson.Gson;
 import com.squareup.okhttp.*;
 import java.io.IOException;
+import java.net.Proxy;
+import java.net.InetSocketAddress;
+import java.net.Proxy.Type;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class Client {
@@ -24,8 +28,23 @@ public class Client {
         GET
     }
 
-    public Client(final String key, final String appIdentifier) {
+    public Client(final String key, final String appIdentifier, final String proxy) {
         client = new OkHttpClient();
+
+        if (proxy != null) {
+            URL proxyUrl;
+            try {
+                proxyUrl = new URL(proxy);
+            } catch(java.net.MalformedURLException error) {
+                throw new Exception(error.getMessage());
+            }
+
+            String proxyHost = proxyUrl.getHost();
+            int proxyPort = proxyUrl.getPort();
+            if (proxyPort < 0) { proxyPort = 80; }
+            Proxy proxyInstance = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            client.setProxy(proxyInstance);
+        }
         client.setSslSocketFactory(SSLContext.getSocketFactory());
         client.setConnectTimeout(0, TimeUnit.SECONDS);
         client.setReadTimeout(0, TimeUnit.SECONDS);
