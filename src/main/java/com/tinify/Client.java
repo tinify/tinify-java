@@ -28,23 +28,19 @@ public class Client {
         GET
     }
 
-    public Client(final String key, final String appIdentifier, final String proxy) {
+    public Client(final String key, final String appIdentifier, final URL proxy) {
         client = new OkHttpClient();
 
-        if (proxy != null) {
-            URL proxyUrl;
-            try {
-                proxyUrl = new URL(proxy);
-            } catch(java.net.MalformedURLException error) {
-                throw new Exception(error.getMessage());
-            }
+        Proxy proxyAddress = createProxyAddress(proxy);
+        Authenticator proxyAuthenticator = createProxyAuthenticator(proxy);
 
-            String proxyHost = proxyUrl.getHost();
-            int proxyPort = proxyUrl.getPort();
-            if (proxyPort < 0) { proxyPort = 80; }
-            Proxy proxyInstance = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            client.setProxy(proxyInstance);
+        if (proxyAddress != null) {
+            client.setProxy(proxyAddress);
+            if (proxyAuthenticator != null) {
+                client.setAuthenticator(proxyAuthenticator);
+            }
         }
+
         client.setSslSocketFactory(SSLContext.getSocketFactory());
         client.setConnectTimeout(0, TimeUnit.SECONDS);
         client.setReadTimeout(0, TimeUnit.SECONDS);
@@ -77,6 +73,47 @@ public class Client {
 
     public final Response request(final Method method, final String endpoint, final byte[] body) throws Exception {
         return request(method, endpoint, RequestBody.create(null, body));
+    }
+
+    private Proxy createProxyAddress(final URL proxy) {
+        if (proxy == null) return null;
+
+        String host = proxy.getHost();
+        int port = proxy.getPort();
+
+        if (port < 0) {
+            port = proxy.getDefaultPort();
+        }
+
+        return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
+    }
+
+    private Authenticator createProxyAuthenticator(final URL proxy) {
+        if (proxy == null) return null;
+
+        String user = proxy.getUserInfo();
+        if (user == null) return null;
+
+        final String username, password;
+        int c = user.indexOf(':');
+        if (0 < c) {
+            username = user.substring(0, c);
+            password = user.substring(c + 1);
+        } else {
+            username = user;
+            password = null;
+        }
+
+        return new Authenticator() {
+            @Override public Request authenticate(Proxy proxy, Response response) throws IOException {
+                return null;
+            }
+
+            @Override public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+                String credential = Credentials.basic(username, password);
+                return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+            }
+        };
     }
 
     private Response request(final Method method, final String endpoint, final RequestBody body) throws Exception {

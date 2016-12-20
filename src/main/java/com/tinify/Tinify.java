@@ -1,11 +1,12 @@
 package com.tinify;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class Tinify {
     private static String key;
     private static String appIdentifier;
-    private static String proxy;
+    private static URL proxy;
     private static int compressionCount = 0;
     private static Client client;
 
@@ -16,9 +17,9 @@ public class Tinify {
         if (client != null) {
             return client;
         } else {
-            synchronized(Tinify.class) {
+            synchronized (Tinify.class) {
                 if (client == null) {
-                    client = new Client(key(), appIdentifier(), proxy);
+                    client = new Client(key, appIdentifier, proxy);
                 }
             }
             return client;
@@ -30,8 +31,16 @@ public class Tinify {
         client = null;
     }
 
-    public static void setProxy(final String proxy) {
-        Tinify.proxy = proxy;
+    public static void setProxy(final String proxy) throws ConnectionException {
+        if (proxy != null) {
+            try {
+                Tinify.proxy = new URL(proxy);
+            } catch (java.lang.Exception e) {
+                throw new ConnectionException("Invalid proxy: " + e.getMessage(), e);
+            }
+        } else {
+            Tinify.proxy = null;
+        }
         client = null;
     }
 
@@ -69,7 +78,7 @@ public class Tinify {
     }
 
     public static String proxy() {
-      return proxy;
+        return proxy.toString();
     }
 
     public static String appIdentifier() {
