@@ -52,6 +52,7 @@ public class TinifyTest {
     @After
     public void tearDown() throws IOException {
         Tinify.setKey(null);
+        Tinify.setProxy(null);
         server.shutdown();
     }
 
@@ -85,6 +86,22 @@ public class TinifyTest {
     }
 
     @Test
+    public void proxyShouldResetClientWithNewProxy() throws InterruptedException {
+        server.enqueue(new MockResponse().setResponseCode(407));
+        server.enqueue(new MockResponse().setResponseCode(200));
+
+        Tinify.setKey("abcde");
+        Tinify.setProxy("http://localhost");
+        Tinify.client();
+        Tinify.setProxy("http://user:pass@" + server.getHostName() + ":" + server.getPort());
+        Tinify.client().request(Client.Method.GET, "/");
+
+        RecordedRequest request1 = server.takeRequest(5, TimeUnit.SECONDS);
+        RecordedRequest request2 = server.takeRequest(5, TimeUnit.SECONDS);
+        assertEquals("Basic dXNlcjpwYXNz", request2.getHeader("Proxy-Authorization"));
+    }
+
+    @Test
     public void clientWithKeyShouldReturnClient() {
         Tinify.setKey("abcde");
         assertThat(Tinify.client(), isA(Client.class));
@@ -92,6 +109,13 @@ public class TinifyTest {
 
     @Test(expected = AccountException.class)
     public void clientWithoutKeyShouldThrowException() {
+        Tinify.client();
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void clientWithInvalidProxyShouldThrowException() {
+        Tinify.setKey("abcde");
+        Tinify.setProxy("http-bad-url");
         Tinify.client();
     }
 

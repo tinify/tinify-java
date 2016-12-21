@@ -3,6 +3,10 @@ package com.tinify;
 import com.google.gson.Gson;
 import com.squareup.okhttp.*;
 import java.io.IOException;
+import java.net.Proxy;
+import java.net.InetSocketAddress;
+import java.net.Proxy.Type;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class Client {
@@ -24,8 +28,34 @@ public class Client {
         GET
     }
 
+    public Client(final String key) {
+        this(key, null, null);
+    }
+
     public Client(final String key, final String appIdentifier) {
+        this(key, appIdentifier, null);
+    }
+
+    public Client(final String key, final String appIdentifier, final String proxy) {
         client = new OkHttpClient();
+
+        if (proxy != null) {
+            try {
+                URL url = new URL(proxy);
+                Proxy proxyAddress = createProxyAddress(url);
+                Authenticator proxyAuthenticator = createProxyAuthenticator(url);
+
+                if (proxyAddress != null) {
+                    client.setProxy(proxyAddress);
+                    if (proxyAuthenticator != null) {
+                        client.setAuthenticator(proxyAuthenticator);
+                    }
+                }
+            } catch (java.lang.Exception e) {
+                throw new ConnectionException("Invalid proxy: " + e.getMessage(), e);
+            }
+        }
+
         client.setSslSocketFactory(SSLContext.getSocketFactory());
         client.setConnectTimeout(0, TimeUnit.SECONDS);
         client.setReadTimeout(0, TimeUnit.SECONDS);
@@ -58,6 +88,47 @@ public class Client {
 
     public final Response request(final Method method, final String endpoint, final byte[] body) throws Exception {
         return request(method, endpoint, RequestBody.create(null, body));
+    }
+
+    private Proxy createProxyAddress(final URL proxy) {
+        if (proxy == null) return null;
+
+        String host = proxy.getHost();
+        int port = proxy.getPort();
+
+        if (port < 0) {
+            port = proxy.getDefaultPort();
+        }
+
+        return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
+    }
+
+    private Authenticator createProxyAuthenticator(final URL proxy) {
+        if (proxy == null) return null;
+
+        String user = proxy.getUserInfo();
+        if (user == null) return null;
+
+        final String username, password;
+        int c = user.indexOf(':');
+        if (0 < c) {
+            username = user.substring(0, c);
+            password = user.substring(c + 1);
+        } else {
+            username = user;
+            password = null;
+        }
+
+        return new Authenticator() {
+            @Override public Request authenticate(Proxy proxy, Response response) throws IOException {
+                return null;
+            }
+
+            @Override public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+                String credential = Credentials.basic(username, password);
+                return response.request().newBuilder().header("Proxy-Authorization", credential).build();
+            }
+        };
     }
 
     private Response request(final Method method, final String endpoint, final RequestBody body) throws Exception {

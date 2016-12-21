@@ -20,12 +20,14 @@ public class Integration {
     @BeforeClass
     public static void setup() throws java.io.IOException, URISyntaxException {
         String key = System.getenv().get("TINIFY_KEY");
+        String proxy = System.getenv().get("TINIFY_PROXY");
         if (key == null) {
             System.out.println("Set the TINIFY_KEY environment variable.");
             System.exit(1);
         }
 
         Tinify.setKey(key);
+        Tinify.setProxy(proxy);
 
         String unoptimizedPath = Paths.get(Integration.class.getResource("/voormedia.png").toURI()).toAbsolutePath().toString();
         optimized = Tinify.fromFile(unoptimizedPath);

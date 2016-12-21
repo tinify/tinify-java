@@ -29,7 +29,7 @@ public class ClientErrorTest {
     public void setup() throws IOException {
         Logger.getLogger(MockWebServer.class.getName()).setLevel(Level.WARNING);
         server = new MockWebServer();
-        subject = new Client(key, null);
+        subject = new Client(key);
         server.start();
     }
 
@@ -43,7 +43,7 @@ public class ClientErrorTest {
         new Expectations() {{
             httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
         }};
-        new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ClientErrorTest {
             httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
         }};
         try {
-            new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (ConnectionException e) {
             assertEquals("Error while connecting: SocketTimeoutException", e.getMessage());
@@ -64,7 +64,7 @@ public class ClientErrorTest {
         new Expectations() {{
             httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
         }};
-        new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ClientErrorTest {
             httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
         }};
         try {
-            new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (ConnectionException e) {
             assertEquals("Error while connecting: UnknownHostException", e.getMessage());
@@ -85,7 +85,7 @@ public class ClientErrorTest {
         new Expectations() {{
             httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
         }};
-        new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ClientErrorTest {
             httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
         }};
         try {
-            new Client(key, null).request(Client.Method.POST, "http://shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
             fail("Expected an Exception to be thrown");
         } catch (ConnectionException e) {
             assertEquals("Error while connecting: Some exception", e.getMessage());
