@@ -102,17 +102,6 @@ public class TinifyTest {
     }
 
     @Test
-    public void proxyShouldReturnProxy() throws InterruptedException {
-        Tinify.setProxy("http://user:pass@localhost:8080");
-        assertEquals("http://user:pass@localhost:8080", Tinify.proxy());
-    }
-
-    @Test(expected = ConnectionException.class)
-    public void proxyWithInvalidURLShouldThrowException() throws InterruptedException {
-        Tinify.setProxy("http-bad-url");
-    }
-
-    @Test
     public void clientWithKeyShouldReturnClient() {
         Tinify.setKey("abcde");
         assertThat(Tinify.client(), isA(Client.class));
@@ -120,6 +109,13 @@ public class TinifyTest {
 
     @Test(expected = AccountException.class)
     public void clientWithoutKeyShouldThrowException() {
+        Tinify.client();
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void clientWithInvalidProxyShouldThrowException() {
+        Tinify.setKey("abcde");
+        Tinify.setProxy("http-bad-url");
         Tinify.client();
     }
 

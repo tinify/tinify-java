@@ -6,7 +6,7 @@ import java.net.URL;
 public class Tinify {
     private static String key;
     private static String appIdentifier;
-    private static URL proxy;
+    private static String proxy;
     private static int compressionCount = 0;
     private static Client client;
 
@@ -31,16 +31,8 @@ public class Tinify {
         client = null;
     }
 
-    public static void setProxy(final String proxy) throws ConnectionException {
-        if (proxy != null) {
-            try {
-                Tinify.proxy = new URL(proxy);
-            } catch (java.lang.Exception e) {
-                throw new ConnectionException("Invalid proxy: " + e.getMessage(), e);
-            }
-        } else {
-            Tinify.proxy = null;
-        }
+    public static void setProxy(final String proxy) {
+        Tinify.proxy = proxy;
         client = null;
     }
 
@@ -78,7 +70,7 @@ public class Tinify {
     }
 
     public static String proxy() {
-        return proxy.toString();
+        return proxy;
     }
 
     public static String appIdentifier() {

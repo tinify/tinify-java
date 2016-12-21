@@ -28,16 +28,31 @@ public class Client {
         GET
     }
 
-    public Client(final String key, final String appIdentifier, final URL proxy) {
+    public Client(final String key) {
+        this(key, null, null);
+    }
+
+    public Client(final String key, final String appIdentifier) {
+        this(key, appIdentifier, null);
+    }
+
+    public Client(final String key, final String appIdentifier, final String proxy) {
         client = new OkHttpClient();
 
-        Proxy proxyAddress = createProxyAddress(proxy);
-        Authenticator proxyAuthenticator = createProxyAuthenticator(proxy);
+        if (proxy != null) {
+            try {
+                URL url = new URL(proxy);
+                Proxy proxyAddress = createProxyAddress(url);
+                Authenticator proxyAuthenticator = createProxyAuthenticator(url);
 
-        if (proxyAddress != null) {
-            client.setProxy(proxyAddress);
-            if (proxyAuthenticator != null) {
-                client.setAuthenticator(proxyAuthenticator);
+                if (proxyAddress != null) {
+                    client.setProxy(proxyAddress);
+                    if (proxyAuthenticator != null) {
+                        client.setAuthenticator(proxyAuthenticator);
+                    }
+                }
+            } catch (java.lang.Exception e) {
+                throw new ConnectionException("Invalid proxy: " + e.getMessage(), e);
             }
         }
 
