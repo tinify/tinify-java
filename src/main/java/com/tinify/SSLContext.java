@@ -19,18 +19,21 @@ public class SSLContext {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(certificateStream());
 
-            // Put the certificates a new key store.
-            char[] password = "password".toCharArray(); // Any password will work.
-            KeyStore keyStore = newEmptyKeyStore(password);
+            KeyStore keyStore = newEmptyKeyStore();
             int index = 0;
             for (Certificate certificate : certificates) {
                 String certificateAlias = Integer.toString(index++);
                 keyStore.setCertificateEntry(certificateAlias, certificate);
             }
 
+            if (keyStore.size() == 0) {
+                /* The resource stream was empty, no certificates were found. */
+                throw new ConnectionException("Unable to load any CA certificates.", null);
+            }
+
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
                     KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, password);
+            keyManagerFactory.init(keyStore, null);
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);
@@ -49,11 +52,11 @@ public class SSLContext {
         return SSLContext.class.getResourceAsStream("/cacert.pem");
     }
 
-    private static KeyStore newEmptyKeyStore(char[] password) throws GeneralSecurityException {
+    private static KeyStore newEmptyKeyStore() throws GeneralSecurityException {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream in = null; // By convention, 'null' creates an empty key store.
-            keyStore.load(in, password);
+            /* By convention, a null InputStream creates an empty key store. */
+            keyStore.load(null, null);
             return keyStore;
         } catch (IOException e) {
             throw new AssertionError(e);

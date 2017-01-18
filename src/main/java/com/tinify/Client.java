@@ -79,6 +79,7 @@ public class Client {
     }
 
     public final Response request(final Method method, final String endpoint, final Options options) throws Exception {
+        /* OkHttp does not support null request bodies if the method is POST. */
         if (method.equals(Method.GET)) {
             return request(method, endpoint, options.isEmpty() ? null : RequestBody.create(JSON, options.toJson()));
         } else {
