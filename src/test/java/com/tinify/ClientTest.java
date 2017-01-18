@@ -28,7 +28,7 @@ import static org.junit.Assert.fail;
 public class ClientTest {
     Client subject;
     MockWebServer server;
-    String key = "ABC123456789";
+    String key = "key";
 
     @Before
     public void setup() throws IOException {
@@ -81,7 +81,6 @@ public class ClientTest {
         subject.request(Client.Method.POST, "/shrink", new byte[] {});
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals("/shrink", request.getPath());
-        assertEquals("POST", request.getMethod());
     }
 
     @Test

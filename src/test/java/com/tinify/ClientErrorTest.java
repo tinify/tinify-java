@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 public class ClientErrorTest {
     Client subject;
     MockWebServer server;
-    String key = "ABC123456789";
+    String key = "key";
 
     @Mocked
     OkHttpClient httpClient;

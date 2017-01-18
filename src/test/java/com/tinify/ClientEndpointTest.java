@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ClientEndpointTest {
     Client subject;
-    String key = "ABC123456789";
+    String key = "key";
 
     @Mocked
     OkHttpClient httpClient;
