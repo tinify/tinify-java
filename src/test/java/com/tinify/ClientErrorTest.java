@@ -17,13 +17,16 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Response;
+import mockit.Invocation;
+import mockit.Mock;
+import mockit.MockUp;
+
 public class ClientErrorTest {
     Client subject;
     MockWebServer server;
     String key = "key";
-
-    @Mocked
-    OkHttpClient httpClient;
 
     @Before
     public void setup() throws IOException {
@@ -38,66 +41,4 @@ public class ClientErrorTest {
         server.shutdown();
     }
 
-    @Test(expected = ConnectionException.class)
-    public void requestWithTimeoutShouldThrowConnectionException() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
-        }};
-        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-    }
-
-    @Test
-    public void requestWithTimeoutShouldThrowExceptionWithMessage() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.net.SocketTimeoutException("SocketTimeoutException");
-        }};
-        try {
-            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-            fail("Expected an Exception to be thrown");
-        } catch (ConnectionException e) {
-            assertEquals("Error while connecting: SocketTimeoutException", e.getMessage());
-        }
-    }
-
-    @Test(expected = ConnectionException.class)
-    public void requestWithSocketErrorShouldThrowConnectionException() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
-        }};
-        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-    }
-
-    @Test
-    public void requestWithSocketErrorShouldThrowExceptionWithMessage() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.net.UnknownHostException("UnknownHostException");
-        }};
-        try {
-            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-            fail("Expected an Exception to be thrown");
-        } catch (ConnectionException e) {
-            assertEquals("Error while connecting: UnknownHostException", e.getMessage());
-        }
-    }
-
-    @Test(expected = ConnectionException.class)
-    public void requestWithUnexpectedExceptionShouldThrowConnectionException() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
-        }};
-        new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-    }
-
-    @Test
-    public void requestWithUnexpectedExceptionShouldThrowExceptionWithMessage() throws Exception {
-        new Expectations() {{
-            httpClient.newCall((Request) any); result = new java.lang.Exception("Some exception");
-        }};
-        try {
-            new Client(key).request(Client.Method.POST, "http://shrink", new byte[] {});
-            fail("Expected an Exception to be thrown");
-        } catch (ConnectionException e) {
-            assertEquals("Error while connecting: Some exception", e.getMessage());
-        }
-    }
 }

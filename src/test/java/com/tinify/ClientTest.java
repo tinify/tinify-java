@@ -2,6 +2,8 @@ package com.tinify;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Response;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -68,7 +70,7 @@ public class ClientTest {
     @Test
     public void requestWhenValidShouldIssueRequest() throws Exception, InterruptedException {
         enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new byte[] {});
+        subject.request(Client.Method.POST, "/shrink");
         String credentials = new String(Base64.encodeBase64(("api:" + key).getBytes()));
 
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
@@ -78,7 +80,7 @@ public class ClientTest {
     @Test
     public void requestWhenValidShouldIssueRequestToEndpoint() throws Exception, InterruptedException {
         enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new byte[] {});
+        subject.request(Client.Method.POST, "/shrink");
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals("/shrink", request.getPath());
     }
@@ -86,7 +88,7 @@ public class ClientTest {
     @Test
     public void requestWhenValidShouldIssueRequestWithMethod() throws Exception, InterruptedException {
         enqueuShrink();
-        subject.request(Client.Method.POST, "/shrink", new byte[] {});
+        subject.request(Client.Method.POST, "/shrink");
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals("POST", request.getMethod());
     }
@@ -147,7 +149,7 @@ public class ClientTest {
     public void requestWhenValidWithAppIdShouldIssueRequestWithUserAgent() throws Exception, InterruptedException {
         enqueuShrink();
         Client client = new Client(key, "TestApp/0.1");
-        client.request(Client.Method.POST, "/shrink", new byte[] {});
+        client.request(Client.Method.POST, "/shrink");
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals(Client.USER_AGENT + " TestApp/0.1", request.getHeader("User-Agent"));
     }
@@ -157,63 +159,238 @@ public class ClientTest {
         server.enqueue(new MockResponse().setResponseCode(407));
         enqueuShrink();
         Client client = new Client(key, null, "http://user:pass@" + server.getHostName() + ":" + server.getPort());
-        client.request(Client.Method.POST, "/shrink", new byte[] {});
+        client.request(Client.Method.POST, "/shrink");
         RecordedRequest request1 = server.takeRequest(5, TimeUnit.SECONDS);
         RecordedRequest request2 = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals("Basic dXNlcjpwYXNz", request2.getHeader("Proxy-Authorization"));
     }
 
-    @SuppressWarnings("unused")
-    public void requestWithTimeout() {
-        // See ClientErrorTest.java
-    }
+    @Test
+    public void requestWithTimeoutOnceShouldReturnResponse() throws Exception {
+        new MockUp<Call>() {
+            int count = 1;
 
-    @SuppressWarnings("unused")
-    public void requestWithSocketException() {
-        // See ClientErrorTest.java
-    }
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                if (count == 0) {
+                    return inv.proceed();
+                } else {
+                    count--;
+                    throw new java.net.SocketTimeoutException("SocketTimeoutException");
+                }
+            }
+        };
 
-    @SuppressWarnings("unused")
-    public void requestWithUnexpectedException() {
-        // See ClientErrorTest.java
-    }
-
-    @Test(expected = ServerException.class)
-    public void requestWithServerErrorShouldThrowServerException() throws Exception {
         server.enqueue(new MockResponse()
-                .setResponseCode(584)
-                .setBody("{'error':'InternalServerError','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+                .setResponseCode(201)
+                .setBody(""));
+
+        assertEquals(201, new Client(key).request(Client.Method.POST, "/shrink").code());
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void requestWithTimeoutRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new java.net.SocketTimeoutException("SocketTimeoutException");
+            }
+        };
+
+        new Client(key).request(Client.Method.POST, "http://shrink");
     }
 
     @Test
-    public void requestWithServerErrorShouldThrowExceptionWithMessage() throws Exception {
+    public void requestWithTimeoutRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new java.net.SocketTimeoutException("SocketTimeoutException");
+            }
+        };
+
+        try {
+            new Client(key).request(Client.Method.POST, "http://shrink");
+            fail("Expected an Exception to be thrown");
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: SocketTimeoutException", e.getMessage());
+        }
+    }
+
+    @Test
+    public void requestWithSocketErrorOnceShouldReturnResponse() throws Exception {
+        new MockUp<Call>() {
+            int count = 1;
+
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                if (count == 0) {
+                    return inv.proceed();
+                } else {
+                    count--;
+                    throw new java.net.UnknownHostException("UnknownHostException");
+                }
+            }
+        };
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .setBody(""));
+
+        assertEquals(201, new Client(key).request(Client.Method.POST, "/shrink").code());
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void requestWithSocketErrorRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new java.net.UnknownHostException("UnknownHostException");
+            }
+        };
+
+        new Client(key).request(Client.Method.POST, "http://shrink");
+    }
+
+    @Test
+    public void requestWithSocketErrorRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new java.net.UnknownHostException("UnknownHostException");
+            }
+        };
+
+        try {
+            new Client(key).request(Client.Method.POST, "http://shrink");
+            fail("Expected an Exception to be thrown");
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: UnknownHostException", e.getMessage());
+        }
+    }
+
+    @Test
+    public void requestWithUnexpectedExceptionOnceShouldReturnResponse() throws Exception {
+        new MockUp<Call>() {
+            int count = 1;
+
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                if (count == 0) {
+                    return inv.proceed();
+                } else {
+                    count--;
+                    throw new RuntimeException("Some exception");
+                }
+            }
+        };
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .setBody(""));
+
+        assertEquals(201, new Client(key).request(Client.Method.POST, "/shrink").code());
+    }
+
+    @Test(expected = ConnectionException.class)
+    public void requestWithUnexpectedExceptionRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new RuntimeException("Some exception");
+            }
+        };
+
+        new Client(key).request(Client.Method.POST, "http://shrink");
+    }
+
+    @Test
+    public void requestWithUnexpectedExceptionRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<Call>() {
+            @Mock
+            public Response execute(Invocation inv) throws IOException {
+                throw new RuntimeException("Some exception");
+            }
+        };
+
+        try {
+            new Client(key).request(Client.Method.POST, "http://shrink");
+            fail("Expected an Exception to be thrown");
+        } catch (ConnectionException e) {
+            assertEquals("Error while connecting: Some exception", e.getMessage());
+        }
+    }
+
+    @Test
+    public void requestWithServerErrorOnceShouldReturnResponse() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(584)
+                .setBody("{'error':'InternalServerError','message':'Oops!'}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .setBody(""));
+        assertEquals(201, new Client(key).request(Client.Method.POST, "/shrink").code());
+    }
+
+    @Test(expected = ServerException.class)
+    public void requestWithServerErrorRepeatedlyShouldThrowServerException() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(584)
+                .setBody("{'error':'InternalServerError','message':'Oops!'}"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(584)
+                .setBody("{'error':'InternalServerError','message':'Oops!'}"));
+        new Client(key).request(Client.Method.POST, "/shrink");
+    }
+
+    @Test
+    public void requestWithServerErrorRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(584)
+                .setBody("{'error':'InternalServerError','message':'Oops!'}"));
         server.enqueue(new MockResponse()
                 .setResponseCode(584)
                 .setBody("{'error':'InternalServerError','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 584/InternalServerError)", e.getMessage());
         }
     }
 
-    @Test(expected = ServerException.class)
-    public void requestWithBadServerResponseShouldThrowServerException() throws Exception {
+    @Test
+    public void requestWithBadServerResponseOnceShouldReturnResponse() throws Exception {
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .setBody(""));
+        assertEquals(201, new Client(key).request(Client.Method.POST, "/shrink").code());
+    }
+
+    @Test(expected = ServerException.class)
+    public void requestWithBadServerResponseRepeatedlyShouldThrowServerException() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(543)
+                .setBody("<!-- this is not json -->"));
+        server.enqueue(new MockResponse()
+                .setResponseCode(543)
+                .setBody("<!-- this is not json -->"));
+        new Client(key).request(Client.Method.POST, "/shrink");
     }
 
     @Test
-    public void requestWithBlankServerResponseShouldThrowServerException() throws Exception {
+    public void requestWithBlankServerResponseRepeatedlyShouldThrowServerException() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(543)
+                .setBody(""));
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody(""));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Error while parsing response: received empty body (HTTP 543/ParseError)", e.getMessage());
@@ -221,12 +398,15 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithBadServerResponseShouldThrowExceptionWithMessage() throws Exception {
+    public void requestWithBadServerResponseRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        server.enqueue(new MockResponse()
+                .setResponseCode(543)
+                .setBody("<!-- this is not json -->"));
         server.enqueue(new MockResponse()
                 .setResponseCode(543)
                 .setBody("<!-- this is not json -->"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Error while parsing response: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $ (HTTP 543/ParseError)", e.getMessage());
@@ -238,7 +418,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key).request(Client.Method.POST, "/shrink");
     }
 
     @Test
@@ -247,7 +427,7 @@ public class ClientTest {
                 .setResponseCode(492)
                 .setBody("{'error':'BadRequest','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 492/BadRequest)", e.getMessage());
@@ -259,7 +439,7 @@ public class ClientTest {
         server.enqueue(new MockResponse()
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));
-        new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+        new Client(key).request(Client.Method.POST, "/shrink");
     }
 
     @Test
@@ -268,7 +448,7 @@ public class ClientTest {
                 .setResponseCode(401)
                 .setBody("{'error':'Unauthorized','message':'Oops!'}"));
         try {
-            new Client(key).request(Client.Method.POST, "/shrink", new byte[] {});
+            new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
             assertEquals("Oops! (HTTP 401/Unauthorized)", e.getMessage());

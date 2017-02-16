@@ -29,7 +29,7 @@ import java.io.IOException;
 public class Compress {
   public static void main(String[] args) throws java.io.IOException {
     Tinify.setKey("YOUR_API_KEY");
-    Tinify.fromFile("input.png").toFile("output.png");
+    Tinify.fromFile("unoptimized.png").toFile("optimized.png");
   }
 }
 ```

@@ -60,31 +60,31 @@ public class ResultTest {
     }
 
     @Test
-    public void withoutMetadataHeightShouldReturnNull() {
+    public void withoutMetaAndDataHeightShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.height(), is(nullValue()));
     }
 
     @Test
-    public void withoutMetadataLocationShouldReturnNull() {
+    public void withoutMetaAndDataLocationShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.location(), is(nullValue()));
     }
 
     @Test
-    public void withoutMetadataSizeShouldReturnNull() {
+    public void withoutMetaAndDataSizeShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.size(), is(nullValue()));
     }
 
     @Test
-    public void withoutMetadataContentTypeShouldReturnNull() {
+    public void withoutMetaAndDataContentTypeShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.mediaType(), is(nullValue()));
     }
 
     @Test
-    public void withoutMetadataToBufferShouldReturnNull() {
+    public void withoutMetaAndDataToBufferShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.toBuffer(), is(nullValue()));
     }

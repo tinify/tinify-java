@@ -16,7 +16,12 @@ public class Client {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
+
     public static final String API_ENDPOINT = "https://api.tinify.com";
+
+    public static final short RETRY_COUNT = 1;
+    public static final short RETRY_DELAY = 500;
+
     public static final String USER_AGENT = "Tinify/"
             + Client.class.getPackage().getImplementationVersion()
             + " Java/" + System.getProperty("java.version")
@@ -140,49 +145,62 @@ public class Client {
             url = HttpUrl.parse(API_ENDPOINT + endpoint);
         }
 
-        Request request = new Request.Builder()
-                .header("Authorization", credentials)
-                .header("User-Agent", userAgent)
-                .url(url)
-                .method(method.toString(), body)
-                .build();
+        for (short retries = RETRY_COUNT; retries >= 0; retries--) {
+            if (retries < RETRY_COUNT) {
+                try {
+                    Thread.sleep(RETRY_DELAY);
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
 
-        Response response;
-        try {
-            response = client.newCall(request).execute();
-        } catch (java.lang.Exception e) {
-            throw new ConnectionException("Error while connecting: " + e.getMessage(), e);
-        }
+            Request request = new Request.Builder()
+                    .header("Authorization", credentials)
+                    .header("User-Agent", userAgent)
+                    .url(url)
+                    .method(method.toString(), body)
+                    .build();
 
-        String compressionCount = response.header("Compression-Count");
-        if (compressionCount != null && !compressionCount.isEmpty()) {
-            Tinify.setCompressionCount(Integer.valueOf(compressionCount));
-        }
+            Response response;
+            try {
+                response = client.newCall(request).execute();
+            } catch (java.lang.Exception e) {
+                if (retries > 0) continue;
+                throw new ConnectionException("Error while connecting: " + e.getMessage(), e);
+            }
 
-        if (response.isSuccessful()) {
-            return response;
-        } else {
+            String compressionCount = response.header("Compression-Count");
+            if (compressionCount != null && !compressionCount.isEmpty()) {
+                Tinify.setCompressionCount(Integer.valueOf(compressionCount));
+            }
+
+            if (response.isSuccessful()) return response;
+
             Exception.Data data;
             Gson gson = new Gson();
             try {
-                 data = gson.fromJson(response.body().charStream(), Exception.Data.class);
-                 if (data == null) {
-                     data = new Exception.Data();
-                     data.setMessage("Error while parsing response: received empty body");
-                     data.setError("ParseError");
-                 }
+                data = gson.fromJson(response.body().charStream(), Exception.Data.class);
+                if (data == null) {
+                    data = new Exception.Data();
+                    data.setMessage("Error while parsing response: received empty body");
+                    data.setError("ParseError");
+                }
             } catch (com.google.gson.JsonParseException e) {
-                 data = new Exception.Data();
-                 data.setMessage("Error while parsing response: " + e.getMessage());
-                 data.setError("ParseError");
+                data = new Exception.Data();
+                data.setMessage("Error while parsing response: " + e.getMessage());
+                data.setError("ParseError");
             } catch (IOException e) {
-                 throw new Exception(e);
+                if (retries > 0) continue;
+                throw new ConnectionException("Error while reading data: " + e.getMessage(), e);
             }
 
+            if (retries > 0 && response.code() >= 500) continue;
             throw Exception.create(
                     data.getMessage(),
                     data.getError(),
                     response.code());
         }
+
+        return null;
     }
 }
