@@ -1,7 +1,18 @@
 package com.tinify;
 
 import com.google.gson.Gson;
-import okhttp3.*;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okhttp3.Route;
+
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.InetSocketAddress;
@@ -10,6 +21,16 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class Client {
+    public class Response {
+        public Headers headers;
+        public byte[] body;
+
+        public Response(Headers headers, byte[] body) {
+            this.headers = headers;
+            this.body = body;
+        }
+    }
+
     private OkHttpClient client;
     private String credentials;
     private String userAgent;
@@ -128,7 +149,7 @@ public class Client {
         }
 
         return new Authenticator() {
-            @Override public Request authenticate(Route route, Response response) throws IOException {
+            @Override public Request authenticate(Route route, okhttp3.Response response) throws IOException {
                 String credential = Credentials.basic(username, password);
                 return response.request().newBuilder().header("Proxy-Authorization", credential).build();
             }
@@ -160,24 +181,30 @@ public class Client {
                     .build();
 
             Response response;
+            int status;
+
             try {
-                response = client.newCall(request).execute();
+                okhttp3.Response res = client.newCall(request).execute();
+                status = res.code();
+                response = new Response(res.headers(), res.body().bytes());
             } catch (java.lang.Exception e) {
                 if (retries > 0) continue;
                 throw new ConnectionException("Error while connecting: " + e.getMessage(), e);
             }
 
-            String compressionCount = response.header("Compression-Count");
+            String compressionCount = response.headers.get("Compression-Count");
             if (compressionCount != null && !compressionCount.isEmpty()) {
                 Tinify.setCompressionCount(Integer.valueOf(compressionCount));
             }
 
-            if (response.isSuccessful()) return response;
+            if (status >= 200 && status < 300) {
+                return response;
+            }
 
             Exception.Data data;
             Gson gson = new Gson();
             try {
-                data = gson.fromJson(response.body().string(), Exception.Data.class);
+                data = gson.fromJson(new String(response.body), Exception.Data.class);
                 if (data == null) {
                     data = new Exception.Data();
                     data.setMessage("Error while parsing response: received empty body");
@@ -187,16 +214,13 @@ public class Client {
                 data = new Exception.Data();
                 data.setMessage("Error while parsing response: " + e.getMessage());
                 data.setError("ParseError");
-            } catch (IOException e) {
-                if (retries > 0) continue;
-                throw new ConnectionException("Error while reading data: " + e.getMessage(), e);
             }
 
-            if (retries > 0 && response.code() >= 500) continue;
+            if (retries > 0 && status >= 500) continue;
             throw Exception.create(
                     data.getMessage(),
                     data.getError(),
-                    response.code());
+                    status);
         }
 
         return null;

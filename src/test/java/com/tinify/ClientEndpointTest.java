@@ -32,7 +32,7 @@ public class ClientEndpointTest {
         }};
 
         try {
-            subject.request(Client.Method.POST, "/shrink", new byte[] {}).close();
+            subject.request(Client.Method.POST, "/shrink", new byte[] {});
         } catch(Exception e) {
             // not interested in result
         }
@@ -53,7 +53,7 @@ public class ClientEndpointTest {
         }};
 
         try {
-            subject.request(Client.Method.POST, url, new byte[] {}).close();
+            subject.request(Client.Method.POST, url, new byte[] {});
         } catch(Exception e) {
             // not interested in result
         }

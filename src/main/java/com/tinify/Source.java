@@ -1,7 +1,5 @@
 package com.tinify;
 
-import okhttp3.Response;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,16 +13,14 @@ public class Source {
     }
 
     public static Source fromBuffer(final byte[] buffer) {
-        try (Response response = Tinify.client().request(Client.Method.POST, "/shrink", buffer)) {
-            return new Source(response.header("location"), new Options());
-        }
+        Client.Response response = Tinify.client().request(Client.Method.POST, "/shrink", buffer);
+        return new Source(response.headers.get("location"), new Options());
     }
 
     public static Source fromUrl(final String url) {
         Options body = new Options().with("source", new Options().with("url", url));
-        try (Response response = Tinify.client().request(Client.Method.POST, "/shrink", body)) {
-            return new Source(response.header("location"), new Options());
-        }
+        Client.Response response = Tinify.client().request(Client.Method.POST, "/shrink", body);
+        return new Source(response.headers.get("location"), new Options());
     }
 
     public Source(final String url, final Options commands) {
@@ -42,13 +38,12 @@ public class Source {
 
     public final ResultMeta store(final Options options) {
         Options params = new Options(commands).with("store", options);
-        try (Response response = Tinify.client().request(Client.Method.POST, url, params)) {
-            return new ResultMeta(response.headers());
-        }
+        Client.Response response = Tinify.client().request(Client.Method.POST, url, params);
+        return new ResultMeta(response.headers);
     }
 
     public final Result result() throws IOException {
-        Response response;
+        Client.Response response;
         if (commands == null) {
             response = Tinify.client().request(Client.Method.GET, url);
         } else {
@@ -56,7 +51,7 @@ public class Source {
         }
 
         /* No need for try(Response response = ...): body().bytes() calls close(). */
-        return new Result(response.headers(), response.body().bytes());
+        return new Result(response.headers, response.body);
     }
 
     public void toFile(final String path) throws IOException {
