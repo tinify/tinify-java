@@ -65,7 +65,7 @@ public class TinifyTest {
         Tinify.setKey("abcde");
         Tinify.client();
         Tinify.setKey("fghij");
-        Tinify.client().request(Client.Method.GET, "/");
+        Tinify.client().request(Client.Method.GET, "/").close();
 
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
 
@@ -81,7 +81,7 @@ public class TinifyTest {
         Tinify.setAppIdentifier("MyApp/1.0");
         Tinify.client();
         Tinify.setAppIdentifier("MyApp/2.0");
-        Tinify.client().request(Client.Method.GET, "/");
+        Tinify.client().request(Client.Method.GET, "/").close();
 
         RecordedRequest request = server.takeRequest(5, TimeUnit.SECONDS);
         assertEquals(Client.USER_AGENT + " MyApp/2.0", request.getHeader("User-Agent"));
@@ -96,7 +96,7 @@ public class TinifyTest {
         Tinify.setProxy("http://localhost");
         Tinify.client();
         Tinify.setProxy("http://user:pass@" + server.getHostName() + ":" + server.getPort());
-        Tinify.client().request(Client.Method.GET, "/");
+        Tinify.client().request(Client.Method.GET, "/").close();
 
         RecordedRequest request1 = server.takeRequest(5, TimeUnit.SECONDS);
         RecordedRequest request2 = server.takeRequest(5, TimeUnit.SECONDS);

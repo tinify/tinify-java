@@ -41,9 +41,10 @@ public class Source {
     }
 
     public final ResultMeta store(final Options options) {
-        Response response = Tinify.client().request(
-                Client.Method.POST, url, new Options(commands).with("store", options));
-        return new ResultMeta(response.headers());
+        Options params = new Options(commands).with("store", options);
+        try (Response response = Tinify.client().request(Client.Method.POST, url, params)) {
+            return new ResultMeta(response.headers());
+        }
     }
 
     public final Result result() throws IOException {
@@ -53,6 +54,8 @@ public class Source {
         } else {
             response = Tinify.client().request(Client.Method.POST, url, commands);
         }
+
+        /* No need for try(Response response = ...): body().bytes() calls close(). */
         return new Result(response.headers(), response.body().bytes());
     }
 
