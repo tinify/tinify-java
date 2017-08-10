@@ -13,7 +13,6 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 public class SSLContext {
-
     public static SSLSocketFactory getSocketFactory() {
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");

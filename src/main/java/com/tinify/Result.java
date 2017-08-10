@@ -3,7 +3,7 @@ package com.tinify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import com.squareup.okhttp.Headers;
+import okhttp3.Headers;
 
 public class Result extends ResultMeta {
     private final byte[] data;

@@ -112,9 +112,9 @@
     </profiles>
     <dependencies>
         <dependency>
-            <groupId>com.squareup.okhttp</groupId>
+            <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>2.5.0</version>
+            <version>3.8.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -140,9 +140,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.squareup.okhttp</groupId>
+            <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>2.5.0</version>
+            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

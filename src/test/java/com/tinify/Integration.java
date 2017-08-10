@@ -8,9 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 

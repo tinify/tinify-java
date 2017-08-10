@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import com.squareup.okhttp.Headers;
+import okhttp3.Headers;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;

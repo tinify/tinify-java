@@ -1,18 +1,16 @@
 package com.tinify;
 
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
-import mockit.Mock;
-import mockit.MockUp;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import mockit.*;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.*;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -37,14 +35,18 @@ public class TinifyTest {
         {
             @Mock
             @SuppressWarnings("unused")
-            HttpUrl parse(String url)
+            HttpUrl parse(Invocation inv, String url)
             {
-                return new HttpUrl.Builder()
-                        .scheme("http")
-                        .host(server.getHostName())
-                        .port(server.getPort())
-                        .encodedPath(url.replaceFirst(Client.API_ENDPOINT, ""))
-                        .build();
+                if (url.contains("localhost")) {
+                    return inv.proceed();
+                } else {
+                    return new HttpUrl.Builder()
+                            .scheme("http")
+                            .host(server.getHostName())
+                            .port(server.getPort())
+                            .encodedPath(url.replaceFirst(Client.API_ENDPOINT, ""))
+                            .build();
+                }
             }
         };
     }

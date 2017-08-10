@@ -1,6 +1,6 @@
 package com.tinify;
 
-import com.squareup.okhttp.Headers;
+import okhttp3.Headers;
 
 public class ResultMeta {
     protected final Headers meta;

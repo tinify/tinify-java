@@ -1,27 +1,11 @@
 package com.tinify;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import mockit.Expectations;
-import mockit.Mocked;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-
 import java.io.IOException;
-import java.lang.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Response;
-import mockit.Invocation;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class ClientErrorTest {
     Client subject;

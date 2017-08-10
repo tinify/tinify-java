@@ -1,7 +1,7 @@
 package com.tinify;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Verifications;
@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,7 +39,7 @@ public class ClientEndpointTest {
         new Verifications() {{
             Request request;
             httpClient.newCall(request = withCapture());
-            assertEquals("https://api.tinify.com/shrink", request.urlString());
+            assertEquals("https://api.tinify.com/shrink", request.url().toString());
         }};
     }
 
@@ -62,7 +61,7 @@ public class ClientEndpointTest {
         new Verifications() {{
             Request request;
             httpClient.newCall(request = withCapture());
-            assertEquals(url, request.urlString());
+            assertEquals(url, request.url().toString());
         }};
     }
 }

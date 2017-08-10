@@ -1,7 +1,7 @@
 package com.tinify;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.*;
+import okhttp3.*;
 import java.io.IOException;
 import java.net.Proxy;
 import java.net.InetSocketAddress;
@@ -42,7 +42,7 @@ public class Client {
     }
 
     public Client(final String key, final String appIdentifier, final String proxy) {
-        client = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         if (proxy != null) {
             try {
@@ -51,9 +51,9 @@ public class Client {
                 Authenticator proxyAuthenticator = createProxyAuthenticator(url);
 
                 if (proxyAddress != null) {
-                    client.setProxy(proxyAddress);
+                    builder.proxy(proxyAddress);
                     if (proxyAuthenticator != null) {
-                        client.setAuthenticator(proxyAuthenticator);
+                        builder.proxyAuthenticator(proxyAuthenticator);
                     }
                 }
             } catch (java.lang.Exception e) {
@@ -61,10 +61,12 @@ public class Client {
             }
         }
 
-        client.setSslSocketFactory(SSLContext.getSocketFactory());
-        client.setConnectTimeout(0, TimeUnit.SECONDS);
-        client.setReadTimeout(0, TimeUnit.SECONDS);
-        client.setWriteTimeout(0, TimeUnit.SECONDS);
+        builder.sslSocketFactory(SSLContext.getSocketFactory());
+        builder.connectTimeout(0, TimeUnit.SECONDS);
+        builder.readTimeout(0, TimeUnit.SECONDS);
+        builder.writeTimeout(0, TimeUnit.SECONDS);
+
+        client = builder.build();
 
         credentials = Credentials.basic("api", key);
         if (appIdentifier == null) {
@@ -126,11 +128,7 @@ public class Client {
         }
 
         return new Authenticator() {
-            @Override public Request authenticate(Proxy proxy, Response response) throws IOException {
-                return null;
-            }
-
-            @Override public Request authenticateProxy(Proxy proxy, Response response) throws IOException {
+            @Override public Request authenticate(Route route, Response response) throws IOException {
                 String credential = Credentials.basic(username, password);
                 return response.request().newBuilder().header("Proxy-Authorization", credential).build();
             }
@@ -179,7 +177,7 @@ public class Client {
             Exception.Data data;
             Gson gson = new Gson();
             try {
-                data = gson.fromJson(response.body().charStream(), Exception.Data.class);
+                data = gson.fromJson(response.body().string(), Exception.Data.class);
                 if (data == null) {
                     data = new Exception.Data();
                     data.setMessage("Error while parsing response: received empty body");

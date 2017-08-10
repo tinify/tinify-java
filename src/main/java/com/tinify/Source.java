@@ -1,6 +1,6 @@
 package com.tinify;
 
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,14 +15,16 @@ public class Source {
     }
 
     public static Source fromBuffer(final byte[] buffer) {
-        Response response = Tinify.client().request(Client.Method.POST, "/shrink", buffer);
-        return new Source(response.header("location"), new Options());
+        try (Response response = Tinify.client().request(Client.Method.POST, "/shrink", buffer)) {
+            return new Source(response.header("location"), new Options());
+        }
     }
 
     public static Source fromUrl(final String url) {
         Options body = new Options().with("source", new Options().with("url", url));
-        Response response = Tinify.client().request(Client.Method.POST, "/shrink", body);
-        return new Source(response.header("location"), new Options());
+        try (Response response = Tinify.client().request(Client.Method.POST, "/shrink", body)) {
+            return new Source(response.header("location"), new Options());
+        }
     }
 
     public Source(final String url, final Options commands) {

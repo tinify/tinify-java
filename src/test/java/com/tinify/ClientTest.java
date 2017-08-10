@@ -1,12 +1,12 @@
 package com.tinify;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import okhttp3.HttpUrl;
+import okhttp3.Call;
+import okhttp3.Response;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import mockit.*;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
@@ -14,9 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.*;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -43,14 +41,18 @@ public class ClientTest {
         {
             @Mock
             @SuppressWarnings("unused")
-            HttpUrl parse(String input)
+            HttpUrl parse(Invocation inv, String url)
             {
-                return new HttpUrl.Builder()
-                        .scheme("http")
-                        .host(server.getHostName())
-                        .port(server.getPort())
-                        .encodedPath("/shrink")
-                        .build();
+                if (url.contains("localhost")) {
+                    return inv.proceed();
+                } else {
+                    return new HttpUrl.Builder()
+                            .scheme("http")
+                            .host(server.getHostName())
+                            .port(server.getPort())
+                            .encodedPath("/shrink")
+                            .build();
+                }
             }
         };
     }
@@ -166,8 +168,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithTimeoutOnceShouldReturnResponse() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithTimeoutOnceShouldReturnResponse() throws Exception {
+        new MockUp<T>() {
             int count = 1;
 
             @Mock
@@ -189,8 +191,8 @@ public class ClientTest {
     }
 
     @Test(expected = ConnectionException.class)
-    public void requestWithTimeoutRepeatedlyShouldThrowConnectionException() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithTimeoutRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new java.net.SocketTimeoutException("SocketTimeoutException");
@@ -201,8 +203,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithTimeoutRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithTimeoutRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new java.net.SocketTimeoutException("SocketTimeoutException");
@@ -218,8 +220,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithSocketErrorOnceShouldReturnResponse() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithSocketErrorOnceShouldReturnResponse() throws Exception {
+        new MockUp<T>() {
             int count = 1;
 
             @Mock
@@ -241,8 +243,8 @@ public class ClientTest {
     }
 
     @Test(expected = ConnectionException.class)
-    public void requestWithSocketErrorRepeatedlyShouldThrowConnectionException() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithSocketErrorRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new java.net.UnknownHostException("UnknownHostException");
@@ -253,8 +255,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithSocketErrorRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithSocketErrorRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new java.net.UnknownHostException("UnknownHostException");
@@ -270,8 +272,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithUnexpectedExceptionOnceShouldReturnResponse() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithUnexpectedExceptionOnceShouldReturnResponse() throws Exception {
+        new MockUp<T>() {
             int count = 1;
 
             @Mock
@@ -293,8 +295,8 @@ public class ClientTest {
     }
 
     @Test(expected = ConnectionException.class)
-    public void requestWithUnexpectedExceptionRepeatedlyShouldThrowConnectionException() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithUnexpectedExceptionRepeatedlyShouldThrowConnectionException() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new RuntimeException("Some exception");
@@ -305,8 +307,8 @@ public class ClientTest {
     }
 
     @Test
-    public void requestWithUnexpectedExceptionRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
-        new MockUp<Call>() {
+    public <T extends Call> void requestWithUnexpectedExceptionRepeatedlyShouldThrowExceptionWithMessage() throws Exception {
+        new MockUp<T>() {
             @Mock
             public Response execute(Invocation inv) throws IOException {
                 throw new RuntimeException("Some exception");
