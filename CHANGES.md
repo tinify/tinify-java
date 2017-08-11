@@ -1,6 +1,6 @@
 ## 1.5.1
-* Properly clean up response body for requests where body is unused.
-* Migrate internals to OkHttp3.
+* Properly close response body for requests where body is unused.
+* Migrate internals to OkHttp3 (minimum version required is 3.3.0).
 
 ## 1.5.0
 * Retry failed requests by default.
