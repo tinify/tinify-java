@@ -199,7 +199,8 @@
                 <extensions>true</extensions>
                 <configuration>
                   <instructions>
-                    <Embed-Dependency>*;scope=compile</Embed-Dependency>
+                    <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                    <Embed-Transitive>true</Embed-Transitive>
                   </instructions>
                 </configuration>
             </plugin>
