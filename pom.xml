@@ -211,7 +211,7 @@
                 <extensions>true</extensions>
                 <configuration>
                   <instructions>
-                    <Import-Package>okhttp, gson, !*</Import-Package>
+                    <Import-Package>!android.*,org.conscrypt.*;resolution:=optional,*</Import-Package>
                     <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
                     <Embed-Transitive>true</Embed-Transitive>
                   </instructions>
