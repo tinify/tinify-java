@@ -1,3 +1,6 @@
+## 1.5.1-beta
+* This version is OSGI competible.
+
 ## 1.5.1
 * Properly close response body for requests where body is unused.
 * Migrate internals to OkHttp3 (minimum version required is 3.3.0).
