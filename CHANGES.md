@@ -1,4 +1,4 @@
-## 1.5.1-beta
+## 1.6.0-beta
 * This version is OSGI competible.
 
 ## 1.5.1
