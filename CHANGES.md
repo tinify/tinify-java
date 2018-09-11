@@ -1,3 +1,6 @@
+## 1.6.0
+* This is the live version of the OSGI competible Tinify Bundle. 
+
 ## 1.6.0-beta
 * This version is OSGI competible.
 
