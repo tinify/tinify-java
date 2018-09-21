@@ -1,8 +1,8 @@
-## 1.6.0
-* This is the live version of the OSGI competible Tinify Bundle. 
+## 1.6.1
+* Fixes to depedency paths in OSGi imported packages.
 
-## 1.6.0-beta
-* This version is OSGI competible.
+## 1.6.0
+* As of this version dependencies are bundled making this package a valid OSGi bundle.
 
 ## 1.5.1
 * Properly close response body for requests where body is unused.
