@@ -8,6 +8,7 @@ env:
 matrix:
   include:
   - jdk: openjdk7
+    env: DEPLOY_ON_SUCCESS=true
 notifications:
   email: false
   # slack:
