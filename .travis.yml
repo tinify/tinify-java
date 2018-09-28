@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk7
+#- openjdk7
 - oraclejdk8
 env:
   global:
@@ -13,6 +13,8 @@ matrix:
   - jdk: oraclejdk8
     env: INTEGRATION_TESTS=true
     script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
+  - jdk: openjdk7
+    env: DEPLOY_ON_SUCCESS=true
 notifications:
   email: false
   # slack:
