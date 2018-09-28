@@ -1,6 +1,4 @@
 language: java
-jdk:
-- openjdk7
 env:
   global:
   - secure: 1NtRFAlL7WXaB70BQGtUw4GS4s693pAyj6A+h/Ssx2MBC8p5jsae53NCrXv0WMQZHbyeDJGM7V+Ms1ESPZ5qvF4bWRf0D/7KPxIXuPWXHZCKflzeqCsGppKawJOKQYvJZtS6BsdB5xanh+t3fHp/fs+XvKROFhI/xT9Zm73t+6ccA2Mjv9QYPCcCniPueTF2HT2qrz3j3z/LkIeV1WmnXLp0X6cQGoRliraKFhcv+gOX01CSbm/1b4FjqjUrq3Oa+Wh6Njx+kxtEd1TOoSDEdCE/dII52lyvvupwGLTZeuM3+qnD4qsLP/UK13p3P/lH15Nq0kGgCJqnbRXLsHZE/131RJFYt5jyq056FX7K/gTo/Emm63F1nThxAFLYjeKQOGB+1b2YyUr3lRRHIfmeEz5PxBfB2B3aZ0RGZw/X7ZwMiy67EiuKl+f5cbJgC8Dx5w6cfi2rFE3mMHZ3N80UQLABulVpTKQtq93GHMwjEX5bkehGY3tGHYpXL5SY2oGzUlgyOPcughtZVbY0Jhs0xTlG3UUsq22qk/V7vwywVtmliuJ3/0mT1CoVkI1d8Vtj7uNQczy2A4k5DLXxyIyAm4hVMNcrcJ9/Hubd+1Kk5aMEJBs5P+5S3ry++iLzWk3LouT3+wz7mjIlEAd5Bfk9spEAsNybFrDMUfDJnEdSRK0=
@@ -14,6 +12,7 @@ matrix:
     script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
   - jdk: oraclejdk8
     env: DEPLOY_ON_SUCCESS=true
+  - jdk: openjdk7
 notifications:
   email: false
   # slack:
