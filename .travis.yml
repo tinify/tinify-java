@@ -7,11 +7,11 @@ env:
   - secure: rO3HqLCEvhP8vqgIno88jH/PMM0ig/mCgdJ0xdJWG0Jn+Y2U0xz8zs0AjD1VjlBFUr8UXqYlXcX35rBX3+6StvxQDOPwBNMbS3GkJmq2RKQIHsmHVAt2UwSPqhArGRxQxxuR8Os/noF9YVlk+S3thFCVegW91mUufB8nBnEKPaYenuHqhJDnEIpSG+ygquwzeLJJ00AhJ/zMZcPiVLYccgyiBTGyWhte20N5gA/Ys5S0dsQIS+3xcnQuAe8kJlt5CsSxVrTZmxg6QjhuvPQiUWWm0NpyV3iCHVz4oEWmm9qDod3AHvyIEdmXV2R5oYAl8k9UjqWxcqsUEBac8SzKOMbUfl/2NFkyfBKZmLVUTzKGLaVDWD+Me4q3FbiyBGTp3OEn8w2JEocX78UkovF6Hy1ixgBqC5QHIcMeQs4JlPkK2Q+rHc2DP8yL8Y5MXGiJXStF2w4S2T1qMIQtrqU5uYXKypRWn9g8y+dhPNk6Iv6loF2XdrdnD4jkL0IbMNGq4lGww+bmS9BX9KeuCWY4KCtFxca6DNqisG7PIzka6IHC/RM6xqYLG9e64oRq+8fE9Ga2yw2L3f9qT/8QbsAddHgVAqu1aLKT6wJ+M4egyzzP25KgAWyXRI+rbggnid+PZyJR9cbS/0w4HI/Jg4l2XiM/phU0qTvbKFHjfDMEzl0=
 matrix:
   include:
-  - jdk: oraclejdk8
-    env: INTEGRATION_TESTS=true
-    script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
-  - jdk: oraclejdk8
+    - jdk: oraclejdk8
     env: DEPLOY_ON_SUCCESS=true
+  # - jdk: oraclejdk8
+  #   env: INTEGRATION_TESTS=true
+  #   script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
   # - jdk: openjdk7
 notifications:
   email: false
