@@ -12,7 +12,6 @@ matrix:
     script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
   - jdk: oraclejdk8
     env: DEPLOY_ON_SUCCESS=true
-  - jdk: openjdk7
 notifications:
   email: false
   # slack:
