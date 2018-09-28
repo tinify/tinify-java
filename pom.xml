@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tinify</groupId>
     <artifactId>tinify</artifactId>
-    <version>1.6.2.28-SNAPSHOT</version>
+    <version>1.6.2.29-SNAPSHOT</version>
     <name>Tinify</name>
     <description>Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.</description>
     <url>https://tinify.com</url>
