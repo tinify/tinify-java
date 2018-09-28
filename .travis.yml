@@ -8,7 +8,11 @@ env:
 matrix:
   include:
   - jdk: openjdk7
+  - jdk: oraclejdk8
     env: DEPLOY_ON_SUCCESS=true
+  - jdk: oraclejdk8
+    env: INTEGRATION_TESTS=true
+    script: "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then mvn -Pintegration integration-test; fi"
 notifications:
   email: false
   # slack:
