@@ -8,7 +8,7 @@ env:
 matrix:
   include:
     - jdk: oraclejdk8
-    env: DEPLOY_ON_SUCCESS=true
+      env: DEPLOY_ON_SUCCESS=true
 notifications:
   email: false
   # slack:
