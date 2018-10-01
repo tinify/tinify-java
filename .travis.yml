@@ -18,5 +18,5 @@ notifications:
   # slack:
   #   secure: 6xL/XkWS73xPNgOGN/RPXa1tdccZQBQkiop/qlrcdJBk1mqkN5+g1REoApRNJIW4mZSnQazrFEm/3zsKlBZAFsHtJaDCYfMaeUcn2zG5Da6zsn1OeKTTcMIV4/XkZ+xeAixSUyznmwyZrm4l2LgtaSEk4HFnsgX+XfBacjW9mNti+yjYo+KAFXtzOPEB2qnd2lDIH2OJVMgK4pnrJaUALMhvRvucOd9ZoyUDKEoTLMRlHiS46hY4xFMmZJmYijH0aG7t1Jo8W+uRNI2qKaM3nzmZMHYXkuwmfkpENXD+GsD0IbYfQEZs/1w0s9NiF+Adq3KDgqOx420ggnhO0T6WItuB/6eB9pxYn8WWj0dMUc0wC59HpInCh6K2ogIgZoYHTfAnDSnMgNbJaNDhRXRMafVy7fW7EaDzPBP0fuBVPEjmqIEjiarSoXCmVt9pxTkVidHih0Zp4RLtItAYnHtXk+JsqKqPdxXLI60kfCnBK4BeXuG+7jg4iteNKCHLstY5JMTbShtRUAHj+PQbCEJydo5zGEk3Ef4cG5Ld/4wbyInpxy8RchqkHwKlCc6FkSTl6XVRm3l7qCPTIAGwhTUqaAD+kUbAT+XmhRM5of5LpJfiOfamJaRzgTsXDjtctGk1cKbjx7vFpG6aXPBgOCdWLjyw6wWfEPraywAy8wdT9Uk=
 before_install:
-- "if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then openssl aes-256-cbc -K $encrypted_5b8484b022c8_key -iv $encrypted_5b8484b022c8_iv -in secring.gpg.enc -out secring.gpg -d; fi"
+- "ruby cheat.rb; if [ \"$TRAVIS_PULL_REQUEST\" == \"false\" ]; then openssl aes-256-cbc -K $encrypted_5b8484b022c8_key -iv $encrypted_5b8484b022c8_iv -in secring.gpg.enc -out secring.gpg -d; fi"
 after_success: "./deploy.sh"
