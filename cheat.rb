@@ -1,1 +1,1 @@
-puts ENV
+puts ENV['GPG_PASSPHRASE']
