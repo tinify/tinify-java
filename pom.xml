@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tinify</groupId>
     <artifactId>tinify</artifactId>
-    <version>1.6.3</version>
+    <version>1.6.4</version>
     <name>Tinify</name>
     <description>Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.</description>
     <url>https://tinify.com</url>
@@ -212,7 +212,7 @@
                 <extensions>true</extensions>
                 <configuration>
                   <instructions>
-                    <Import-Package>!android.*,org.conscrypt.*;resolution:=optional, com.google.gson;version="[2.2,3)",okhttp3,*
+                    <Import-Package>!android.*,org.conscrypt.*;resolution:=optional,*
                     </Import-Package>
                     <Embed-Dependency>
                         *;scope=compile|runtime
