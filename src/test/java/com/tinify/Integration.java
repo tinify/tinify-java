@@ -8,8 +8,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
 import java.nio.file.Paths;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
 
 public class Integration {
     private static Source optimized;

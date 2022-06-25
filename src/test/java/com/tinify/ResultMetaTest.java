@@ -6,8 +6,10 @@ import org.junit.Test;
 import java.util.HashMap;
 import okhttp3.Headers;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ResultMetaTest {
     ResultMeta subject;
