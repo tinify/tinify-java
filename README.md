@@ -16,7 +16,7 @@ Install the API client via Maven:
 <dependency>
   <groupId>com.tinify</groupId>
   <artifactId>tinify</artifactId>
-  <version>1.0</version>
+  <version>1.7.0</version>
 </dependency>
 ```
 

@@ -1,13 +1,15 @@
 package com.tinify;
 
 import com.google.gson.Gson;
+import mockit.Invocation;
+import mockit.Mock;
+import mockit.MockUp;
 import okhttp3.HttpUrl;
 import okhttp3.Call;
 import okhttp3.Response;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import mockit.*;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.After;
 import org.junit.Before;

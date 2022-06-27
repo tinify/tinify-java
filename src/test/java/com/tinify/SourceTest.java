@@ -1,11 +1,13 @@
 package com.tinify;
 
 import com.google.gson.Gson;
+import mockit.Invocation;
+import mockit.Mock;
+import mockit.MockUp;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
-import mockit.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class SourceTest {
     MockWebServer server;
