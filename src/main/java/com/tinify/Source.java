@@ -3,6 +3,8 @@ package com.tinify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 public class Source {
     private String url;
@@ -34,6 +36,14 @@ public class Source {
 
     public final Source resize(final Options options) {
         return new Source(url, new Options(commands).with("resize", options));
+    }
+
+    public final Source transcode(final List<String> transcodeTypes) {
+        return new Source(url, new Options(commands).with("transcode", transcodeTypes));
+    }
+
+    public final Source transform(final Map<String, String> transformOptions) {
+        return new Source(url, new Options(commands).with("transform", transformOptions));
     }
 
     public final ResultMeta store(final Options options) {
