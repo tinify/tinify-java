@@ -46,7 +46,8 @@ public class TinifyTest {
                             .scheme("http")
                             .host(server.getHostName())
                             .port(server.getPort())
-                            .encodedPath(url.replaceFirst(Client.API_ENDPOINT, ""))
+                            .encodedPath(url.replaceFirst(Client.API_ENDPOINT, "")
+                                    .replaceFirst("http://kubernetes.docker.internal:\\d+", ""))
                             .build();
                 }
             }
@@ -57,6 +58,7 @@ public class TinifyTest {
     public void tearDown() throws IOException {
         Tinify.setKey(null);
         Tinify.setProxy(null);
+        server.close();
         server.shutdown();
     }
 
