@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         java: [8]
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v2

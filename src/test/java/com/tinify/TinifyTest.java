@@ -58,7 +58,6 @@ public class TinifyTest {
     public void tearDown() throws IOException {
         Tinify.setKey(null);
         Tinify.setProxy(null);
-        server.close();
         server.shutdown();
     }
 
