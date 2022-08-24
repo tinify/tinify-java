@@ -46,8 +46,7 @@ public class TinifyTest {
                             .scheme("http")
                             .host(server.getHostName())
                             .port(server.getPort())
-                            .encodedPath(url.replaceFirst(Client.API_ENDPOINT, "")
-                                    .replaceFirst("http://kubernetes.docker.internal:\\d+", ""))
+                            .encodedPath(url.replaceFirst(".*(/.*)", "$1"))
                             .build();
                 }
             }
