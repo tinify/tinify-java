@@ -202,7 +202,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
                 <configuration>
-                    <argLine>-javaagent:${project.build.directory}/agents/jmockit-1.49.jar</argLine>
+                    <argLine>-javaagent:"${project.build.directory}/agents/jmockit-1.49.jar"</argLine>
                 </configuration>
             </plugin>
             <plugin>
