@@ -152,7 +152,7 @@ public class Integration {
     public void shouldTransformFile() throws java.lang.Exception {
         Path tempFile = Files.createTempFile("tinify_", null);
         tempFile.toFile().deleteOnExit();
-        Result result = optimized.transform("background=black").result();
+        Result result = optimized.transform(new Options().with("background", "black")).result();
         result.toFile(tempFile.toString());
 
         long size = new File(tempFile.toString()).length();

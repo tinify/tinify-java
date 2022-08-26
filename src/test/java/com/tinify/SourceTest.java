@@ -243,6 +243,25 @@ public class SourceTest {
     }
 
     @Test
+    public void withValidApiKeyTranscodeShouldReturnSource() throws Exception, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("copyrighted file"));
+
+        assertThat(Source.fromBuffer("png file".getBytes()).transcode("image/webp"),
+               isA(Source.class));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+    }
+
+    @Test
     public void withValidApiKeyPreserveShouldReturnSourceWithData() throws Exception, IOException, InterruptedException {
         Tinify.setKey("valid");
 
@@ -354,6 +373,30 @@ public class SourceTest {
 
         RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
         assertJsonEquals("{\"resize\":{\"width\":100,\"height\":60}}", request2.getBody().readUtf8());
+    }
+
+    @Test
+    public void withValidApiKeyTransformShouldReturnSourceWithData() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(201)
+                .addHeader("Location", "https://api.tinify.com/some/location"));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("small file"));
+
+        Options options = new Options().with("background", "black");
+
+        assertThat(Source.fromBuffer("png file".getBytes()).transform(options).toBuffer(),
+                is(equalTo("small file".getBytes())));
+
+        RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertEquals("png file", request1.getBody().readUtf8());
+
+        RecordedRequest request2 = server.takeRequest(3, TimeUnit.SECONDS);
+        assertJsonEquals("{\"transform\":{\"background\":\"black\"}}", request2.getBody().readUtf8());
     }
 
     @Test

@@ -39,16 +39,12 @@ public class Source {
         return new Source(url, new Options(commands).with("resize", options));
     }
 
-    public final Source transcode(final String transcodeType) {
+    public final Source transcode(final String... options) {
         return new Source(
-                url, new Options(commands).with("type", Arrays.asList(transcodeType.split(";"))));
+                url, new Options(commands).with("type", options));
     }
 
-    public final Source transform(final String transformOptions) {
-        Map<String, String> options =
-                Arrays.stream(transformOptions.split(";"))
-                        .map(item -> item.split("="))
-                        .collect(Collectors.toMap(a -> a[0], a -> a[1]));
+    public final Source transform(final Options options) {
         return new Source(url, new Options(commands).with("transform", options));
     }
 
