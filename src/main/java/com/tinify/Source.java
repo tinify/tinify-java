@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,16 +40,15 @@ public class Source {
     }
 
     public final Source transcode(final String transcodeType) {
-        return new Source(url, new Options(commands).with("type", Collections.singletonList(transcodeType)));
+        return new Source(
+                url, new Options(commands).with("type", Arrays.asList(transcodeType.split(";"))));
     }
 
     public final Source transform(final String transformOptions) {
-        Map<String, String> options = Arrays.stream(transformOptions.split(";"))
-                .map(item -> item.split("="))
-                .collect(Collectors.toMap(
-                        a -> a[0],
-                        a -> a[1]
-                ));
+        Map<String, String> options =
+                Arrays.stream(transformOptions.split(";"))
+                        .map(item -> item.split("="))
+                        .collect(Collectors.toMap(a -> a[0], a -> a[1]));
         return new Source(url, new Options(commands).with("transform", options));
     }
 
