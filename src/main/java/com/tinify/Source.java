@@ -3,9 +3,6 @@ package com.tinify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Source {
     private String url;
@@ -40,8 +37,7 @@ public class Source {
     }
 
     public final Source transcode(final String... options) {
-        return new Source(
-                url, new Options(commands).with("type", options));
+        return new Source(url, new Options(commands).with("type", options));
     }
 
     public final Source transform(final Options options) {
