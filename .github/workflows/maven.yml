@@ -36,4 +36,15 @@ jobs:
         java-version: '8'
     - name: Build with Maven
       run: mvn package --file pom.xml -B 
-    
+
+  build-oracle:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Set up latest Oracle JDK 17'
+      uses: oracle-actions/setup-java@v1
+      with:
+        website: oracle.com
+        release: 17
+    - name: Build with Maven
+      run: mvn package --file pom.xml -B 
