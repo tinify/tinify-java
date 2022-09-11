@@ -1,3 +1,6 @@
+## 1.8.0
+* Added new property extension().
+
 ## 1.6.1
 * Fixes to depedency paths in OSGi imported packages.
 
