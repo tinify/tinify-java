@@ -1,6 +1,6 @@
 ## 1.8.0
 * Added new property extension().
-* Added new methods transcode("image/webp") and transform("background=black").
+* Added new methods convert("image/webp") and transform("background=black").
 
 ## 1.7.0
 * Updated dependent libraries.
