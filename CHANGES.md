@@ -1,4 +1,5 @@
 ## 1.8.0
+<<<<<<< HEAD
 * Added new property extension().
 * Added new methods convert(new Options().with("type", "image/webp")) and
   transform(new Options().with("background", "black")).
