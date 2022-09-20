@@ -243,7 +243,7 @@ public class SourceTest {
     }
 
     @Test
-    public void withValidApiKeyTranscodeShouldReturnSource() throws Exception, InterruptedException {
+    public void withValidApiKeyConvertShouldReturnSource() throws Exception, InterruptedException {
         Tinify.setKey("valid");
 
         server.enqueue(new MockResponse()
@@ -254,7 +254,7 @@ public class SourceTest {
                 .setResponseCode(200)
                 .setBody("copyrighted file"));
 
-        assertThat(Source.fromBuffer("png file".getBytes()).transcode("image/webp"),
+        assertThat(Source.fromBuffer("png file".getBytes()).convert("image/webp"),
                isA(Source.class));
 
         RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);

@@ -131,11 +131,11 @@ public class Integration {
     }
 
     @Test
-    public void shouldTranscodeFile() throws java.lang.Exception {
+    public void shouldConvertFile() throws java.lang.Exception {
         Path tempFile = Files.createTempFile("tinify_", null);
         tempFile.toFile().deleteOnExit();
 
-        Result result = optimized.transcode("image/webp").result();
+        Result result = optimized.convert("image/webp").result();
         result.toFile(tempFile.toString());
 
         long size = new File(tempFile.toString()).length();

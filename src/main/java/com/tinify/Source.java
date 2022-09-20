@@ -36,8 +36,8 @@ public class Source {
         return new Source(url, new Options(commands).with("resize", options));
     }
 
-    public final Source transcode(final String... options) {
-        return new Source(url, new Options(commands).with("type", options));
+    public final Source convert(final String... options) {
+        return new Source(url, new Options(commands).with("convert", new Options().with("type", options)));
     }
 
     public final Source transform(final Options options) {
