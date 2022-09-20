@@ -135,7 +135,7 @@ public class Integration {
         Path tempFile = Files.createTempFile("tinify_", null);
         tempFile.toFile().deleteOnExit();
 
-        Result result = optimized.convert("image/webp").result();
+        Result result = optimized.convert(new Options().with("type", "image/webp")).result();
         result.toFile(tempFile.toString());
 
         long size = new File(tempFile.toString()).length();

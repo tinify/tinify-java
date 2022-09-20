@@ -254,7 +254,7 @@ public class SourceTest {
                 .setResponseCode(200)
                 .setBody("copyrighted file"));
 
-        assertThat(Source.fromBuffer("png file".getBytes()).convert("image/webp"),
+        assertThat(Source.fromBuffer("png file".getBytes()).convert(new Options().with("type", "image/webp")),
                isA(Source.class));
 
         RecordedRequest request1 = server.takeRequest(3, TimeUnit.SECONDS);
