@@ -1,0 +1,145 @@
+name: Java CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        java: [8, 11, 17]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
+        cache: 'maven'
+    - name: Build with Maven
+      run: mvn test --file pom.xml -B
+
+  test-adopt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+        cache: 'maven'
+    - name: Build with Maven
+      run: mvn test --file pom.xml -B
+
+  test-oracle:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: 'Set up latest Oracle JDK 17'
+      uses: oracle-actions/setup-java@v1
+      with:
+        website: oracle.com
+        release: 17
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    - name: Build with Maven
+      run: mvn test --file pom.xml -B
+
+  integration-test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8, 17]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    needs:
+      - "test"
+      - "test-adopt"
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '${{ matrix.java }}'
+        cache: 'maven'
+    - name: Build with Maven
+      env:
+        TINIFY_KEY: ${{ secrets.TINIFY_KEY }}
+      run: mvn -Pintegration integration-test -B
+
+  adopt-integration-test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs:
+      - "test-adopt"
+      - "test"
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+        cache: 'maven'
+    - name: Build with Maven
+      env:
+        TINIFY_KEY: ${{ secrets.TINIFY_KEY }}
+      run: mvn -Pintegration integration-test -B
+
+  publish: 
+    if: |
+     github.repository == 'tinify/tinify-java' &&
+     startsWith(github.ref, 'refs/tags') &&
+     github.event_name == 'push'
+    needs:
+      - "adopt-integration-test"
+      - "integration-test"
+    runs-on: "ubuntu-latest"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: 11
+    - name: Setup GPG
+      run: |
+        # GPG exported with 
+        # gpg -a --export-secret-keys "info@tinify.com" | base64 > gpg.base64
+        mkdir -p ./private-keys-v1.d
+        echo -n "${GPG_KEY_BASE64}" | base64 --decode > ./private-keys-v1.d/gpg.asc
+        echo -n "${GPG_PASSPHRASE}" | gpg --batch --yes --passphrase-fd 0 --import ./private-keys-v1.d/gpg.asc
+        gpg -k
+      env:
+        GPG_KEY_BASE64: ${{ secrets.GPG_KEY_BASE64 }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - name: Check if properly tagged
+      run: |
+        PACKAGE_VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)";
+        CURRENT_TAG="${GITHUB_REF#refs/*/}";
+        if  [[ "${PACKAGE_VERSION}" != "${CURRENT_TAG}" ]]; then
+          >&2 echo "Tag mismatch"
+          >&2 echo "Version in pom.xml (${PACKAGE_VERSION}) does not match the current tag=${CURRENT_TAG}"
+          >&2 echo "Skipping deploy"
+          exit 1;
+        fi
+    - name: 'Build & publish'
+      run: |
+        mvn clean \
+          compile \
+          org.apache.felix:maven-bundle-plugin:bundle \
+            deploy \
+            -Dmaven.test.skip=true \
+            -P release \
+            --settings settings.xml \
+            --no-transfer-progress \
+            --batch-mode
+      env:
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

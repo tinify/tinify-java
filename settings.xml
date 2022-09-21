@@ -13,8 +13,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <gpg.keyname>4C6C5644</gpg.keyname>
-        <gpg.homedir>.</gpg.homedir>
+        <gpg.keyname>14B5D60C</gpg.keyname>
         <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
       </properties>
     </profile>
