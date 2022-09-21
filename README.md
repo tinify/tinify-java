@@ -1,6 +1,6 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.tinify/tinify.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.tinify%22%20AND%20a%3A%22tinify%22)
 [![MIT License](http://img.shields.io/badge/license-MIT-green.svg) ](https://github.com/tinify/tinify-java/blob/main/LICENSE)
-[![Java CI](https://github.com/tinify/tinify-java/actions/workflows/maven.yml/badge.svg)](https://github.com/tinify/tinify-java/actions/workflows/maven.yml)
+[![Java CI/CD](https://github.com/tinify/tinify-java/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/tinify/tinify-java/actions/workflows/ci-cd.yml)
 
 # Tinify API client for Java
 
