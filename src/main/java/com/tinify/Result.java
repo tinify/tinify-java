@@ -29,4 +29,8 @@ public class Result extends ResultMeta {
     public final String mediaType() {
         return meta.get("content-type");
     }
+
+    public final String extension() {
+        return meta.get("content-type") == null ? null : meta.get("content-type").replaceFirst(".*/(.*)", "$1");
+    }
 }

@@ -56,6 +56,11 @@ public class ResultTest {
     }
 
     @Test
+    public void withMetaAndDataMediaTypeShouldReturnExtension() {
+        assertThat(subject.extension(), is(equalTo("png")));
+    }
+
+    @Test
     public void withoutMetaAndDataWidthShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.width(), is(nullValue()));
@@ -89,5 +94,11 @@ public class ResultTest {
     public void withoutMetaAndDataToBufferShouldReturnNull() {
         subject = new Result(Headers.of(), null);
         assertThat(subject.toBuffer(), is(nullValue()));
+    }
+
+    @Test
+    public void withoutMetaAndDataMediaTypeShouldReturnNull() {
+        subject = new Result(Headers.of(), null);
+        assertThat(subject.extension(), is(nullValue()));
     }
 }
