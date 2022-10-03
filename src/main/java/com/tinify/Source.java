@@ -36,6 +36,14 @@ public class Source {
         return new Source(url, new Options(commands).with("resize", options));
     }
 
+    public final Source convert(final Options options) {
+        return new Source(url, new Options(commands).with("convert", options));
+    }
+
+    public final Source transform(final Options options) {
+        return new Source(url, new Options(commands).with("transform", options));
+    }
+
     public final ResultMeta store(final Options options) {
         Options params = new Options(commands).with("store", options);
         Client.Response response = Tinify.client().request(Client.Method.POST, url, params);

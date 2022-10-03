@@ -129,4 +129,42 @@ public class Integration {
         assertThat(contents, containsString(new String(new byte[] {0, 0, 0, (byte)0x89})));
         assertThat(contents, containsString(("Copyright Voormedia")));
     }
+
+    @Test
+    public void shouldConvertFile() throws java.lang.Exception {
+        Path tempFile = Files.createTempFile("tinify_", null);
+        tempFile.toFile().deleteOnExit();
+
+        Result result = optimized.convert(new Options().with("type", "image/webp")).result();
+        result.toFile(tempFile.toString());
+
+        long size = new File(tempFile.toString()).length();
+
+        assertThat(result.width(), is(equalTo(137)));
+        assertThat(result.height(), is(equalTo(21)));
+        assertThat(result.mediaType(), is(equalTo("image/webp")));
+
+        assertThat(size, greaterThan((long) 1000));
+        assertThat(size, lessThan((long) 2000));
+    }
+
+    @Test
+    public void shouldTransformFile() throws java.lang.Exception {
+        Path tempFile = Files.createTempFile("tinify_", null);
+        tempFile.toFile().deleteOnExit();
+        Result result = optimized.transform(new Options().with("background", "black")).result();
+        result.toFile(tempFile.toString());
+
+        long size = new File(tempFile.toString()).length();
+        String contents = new String(Files.readAllBytes(Paths.get(tempFile.toString())));
+
+        assertThat(result.width(), is(equalTo(137)));
+        assertThat(result.height(), is(equalTo(21)));
+
+        assertThat(size, greaterThan((long) 1000));
+        assertThat(size, lessThan((long) 2000));
+
+        /* width == 137 */
+        assertThat(contents, containsString(new String(new byte[] {0, 0, 0, (byte)0x89})));
+    }
 }

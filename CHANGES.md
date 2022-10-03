@@ -1,5 +1,11 @@
 ## 1.8.0
 * Added new property extension().
+* Added new methods convert(new Options().with("type", "image/webp")) and
+  transform(new Options().with("background", "black")).
+
+## 1.7.0
+* Updated dependent libraries.
+* Minimum java version is 1.8.
 
 ## 1.6.1
 * Fixes to depedency paths in OSGi imported packages.
