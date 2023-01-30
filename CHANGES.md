@@ -1,3 +1,6 @@
+## 1.8.1
+* Fixed Import-Package in manifest
+
 ## 1.8.0
 * Added new property extension().
 * Added new methods convert(new Options().with("type", "image/webp")) and
