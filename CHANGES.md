@@ -1,5 +1,5 @@
-## 1.8.1
-* Fixed Import-Package in manifest
+## 1.8.1-SNAPSHOT
+* Fixed Import-Package in manifest for OSGI deployments
 
 ## 1.8.0
 * Added new property extension().
