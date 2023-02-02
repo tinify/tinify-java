@@ -253,7 +253,7 @@
                 <extensions>true</extensions>
                 <configuration>
                   <instructions>
-                    <Import-Package>!android.*,!javax.annotation.meta.*;resolution:=optional,*
+                    <Import-Package>!android.*,!javax.annotation.meta.*,!org.conscrypt.*;resolution:=optional,*
                     </Import-Package>
                     <Embed-Dependency>
                         *;scope=compile|runtime
