@@ -1,4 +1,4 @@
-## 1.8.1-SNAPSHOT
+## 1.8.2-SNAPSHOT
 * Fixed Import-Package in manifest for OSGI deployments
 
 ## 1.8.0
