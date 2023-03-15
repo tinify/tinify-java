@@ -516,4 +516,44 @@ public class SourceTest {
         assertThat(Files.readAllBytes(tempFile),
                 is(equalTo("compressed file".getBytes())));
     }
+
+
+    /*
+     * The following tests should probably be done with parametrized tests
+     */
+    @Test
+    public void withOptionsNotEmptyResultDoesAPOST() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("compressed file"));
+        Result result = new Source("https://api.tinify.com/some/location", new Options().with("I am not", "empty")).result();
+        RecordedRequest outputRequest = server.takeRequest(1, TimeUnit.SECONDS);
+        assertEquals("POST", outputRequest.getMethod());
+    }
+
+    @Test
+    public void withOptionsNULLResultDoesAGET() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("compressed file"));
+        Result result = new Source("https://api.tinify.com/some/location", null).result();
+        RecordedRequest outputRequest = server.takeRequest(1, TimeUnit.SECONDS);
+        assertEquals("GET", outputRequest.getMethod());
+    }
+
+   @Test
+    public void withOptionsEmptyResultDoesAGET() throws Exception, IOException, InterruptedException {
+        Tinify.setKey("valid");
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody("compressed file"));
+        Result result = new Source("https://api.tinify.com/some/location", new Options()).result();
+        RecordedRequest outputRequest = server.takeRequest(1, TimeUnit.SECONDS);
+        assertEquals("GET", outputRequest.getMethod());
+    }
 }
