@@ -1,3 +1,6 @@
+## 1.8.3
+* Fix for requests with empty body
+
 ## 1.8.2
 * Fixed Import-Package manifest for OSGI deployments
 

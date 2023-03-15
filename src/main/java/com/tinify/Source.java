@@ -52,7 +52,7 @@ public class Source {
 
     public final Result result() throws IOException {
         Client.Response response;
-        if (commands == null) {
+        if (commands == null || commands.isEmpty()) {
             response = Tinify.client().request(Client.Method.GET, url);
         } else {
             response = Tinify.client().request(Client.Method.POST, url, commands);
