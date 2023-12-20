@@ -91,6 +91,14 @@ jobs:
         TINIFY_KEY: ${{ secrets.TINIFY_KEY }}
       run: mvn -Pintegration integration-test -B
 
+  record-dependency-graph:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Submit Dependency Snapshot
+        uses: advanced-security/maven-dependency-submission-action@v3
+
   publish: 
     if: |
      github.repository == 'tinify/tinify-java' &&
