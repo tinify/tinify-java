@@ -1,5 +1,5 @@
 ## 1.8.4
-* Migrate Okio to version 3.7.0.
+* Upgrade Okio to version 3.7.0.
 
 ## 1.8.3
 * Fix for requests with empty body
