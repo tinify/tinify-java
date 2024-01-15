@@ -1,3 +1,6 @@
+## 1.8.7
+* Fixed Import-Package manifest for OSGI deployments
+
 ## 1.8.6
 * Fixed Import-Package manifest for OSGI deployments
 

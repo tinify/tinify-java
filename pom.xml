@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tinify</groupId>
     <artifactId>tinify</artifactId>
-    <version>1.8.6</version>
+    <version>1.8.7</version>
     <name>Tinify</name>
     <description>Java client for the Tinify API. Tinify compresses your images intelligently. Read more at https://tinify.com.</description>
     <url>https://tinify.com</url>
@@ -265,7 +265,7 @@
                 <extensions>true</extensions>
                 <configuration>
                   <instructions>
-                    <Import-Package>!com.experian.b2b.global.mvdam-project.*,!android.*,!javax.annotation.meta.*,!org.conscrypt.*;resolution:=optional,*
+                    <Import-Package>!com.tinify.*,!org.bouncycastle.jsse.*,!com.experian.b2b.global.mvdam-project.*,!android.*,!javax.annotation.meta.*,!org.conscrypt.*;resolution:=optional,*
                     </Import-Package>
                     <Embed-Dependency>
                         *;scope=compile|runtime
