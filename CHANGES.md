@@ -1,3 +1,6 @@
+## 1.8.8
+* Fixed transient dependencies for okhttp
+
 ## 1.8.7
 * Fixed Import-Package manifest for OSGI deployments
 
