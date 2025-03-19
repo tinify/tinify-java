@@ -7,47 +7,49 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [8, 11, 17]
+        java: [11, 17, 21]
+        distribution: ["temurin", "adopt"]
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
+        distribution: ${{ matrix.distribution }}
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: Build with Maven
       run: mvn test --file pom.xml -B
 
-  test-adopt:
-    runs-on: ubuntu-latest
+  test-oracle:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        java: [17, 21]
+        distribution: ["oracle"]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/checkout@v4
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v4
       with:
-        distribution: 'adopt'
-        java-version: '8'
+        distribution: ${{ matrix.distribution }}
+        java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: Build with Maven
       run: mvn test --file pom.xml -B
 
-  test-oracle:
+  test-java-8:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: 'Set up latest Oracle JDK 17'
-      uses: oracle-actions/setup-java@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
-        website: oracle.com
-        release: 17
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        distribution: 'adopt'
+        java-version: '8'
+        cache: 'maven'
     - name: Build with Maven
       run: mvn test --file pom.xml -B
 
@@ -56,14 +58,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 17]
+        java: [11, 17, 21]
         os: [ubuntu-latest, macOS-latest, windows-latest]
     needs:
       - "test"
-      - "test-adopt"
+      - "test-java-8"
+      - "test-oracle"
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '${{ matrix.java }}'
@@ -73,11 +76,12 @@ jobs:
         TINIFY_KEY: ${{ secrets.TINIFY_KEY }}
       run: mvn -Pintegration integration-test -B
 
-  adopt-integration-test:
+  adopt-integration-test-java-8:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs:
-      - "test-adopt"
+      - "test-java-8"
+      - "test-oracle"
       - "test"
     steps:
     - uses: actions/checkout@v3
@@ -105,7 +109,7 @@ jobs:
      startsWith(github.ref, 'refs/tags') &&
      github.event_name == 'push'
     needs:
-      - "adopt-integration-test"
+      - "adopt-integration-test-java-8"
       - "integration-test"
     runs-on: "ubuntu-latest"
     steps:
