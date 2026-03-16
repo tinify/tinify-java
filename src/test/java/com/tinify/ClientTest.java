@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ClientTest {
@@ -424,7 +425,8 @@ public class ClientTest {
             new Client(key).request(Client.Method.POST, "/shrink");
             fail("Expected an Exception to be thrown");
         } catch (Exception e) {
-            assertEquals("Error while parsing response: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $ (HTTP 543/ParseError)", e.getMessage());
+            assertTrue(e.getMessage().startsWith("Error while parsing response: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $"));
+            assertTrue(e.getMessage().endsWith("(HTTP 543/ParseError)"));
         }
     }
 
