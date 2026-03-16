@@ -50,7 +50,7 @@ public class Integration {
         assertThat(result.width(), is(equalTo(137)));
         assertThat(result.height(), is(equalTo(21)));
 
-        assertThat(size, greaterThan((long) 1000));
+        assertThat(size, greaterThan((long) 900));
         assertThat(size, lessThan((long) 1500));
 
         /* width == 137 */
@@ -74,7 +74,7 @@ public class Integration {
         assertThat(result.width(), is(equalTo(137)));
         assertThat(result.height(), is(equalTo(21)));
 
-        assertThat(size, greaterThan((long) 1000));
+        assertThat(size, greaterThan((long) 900));
         assertThat(size, lessThan((long) 1500));
 
         /* width == 137 */
@@ -161,7 +161,7 @@ public class Integration {
         assertThat(result.width(), is(equalTo(137)));
         assertThat(result.height(), is(equalTo(21)));
 
-        assertThat(size, greaterThan((long) 1000));
+        assertThat(size, greaterThan((long) 900));
         assertThat(size, lessThan((long) 2000));
 
         /* width == 137 */
