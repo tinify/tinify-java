@@ -23,7 +23,7 @@ public class BundleManifestIT {
 
     private Manifest loadBundleManifest() throws IOException {
         String buildDir = System.getProperty("project.build.directory", "target");
-        String finalName = System.getProperty("project.build.finalName", "tinify-1.8.8");
+        String finalName = System.getProperty("project.build.finalName", "tinify-1.8.9");
         File jar = new File(buildDir, finalName + ".jar");
         assertTrue("Bundle JAR not found: " + jar.getAbsolutePath(), jar.exists());
         try (JarFile jarFile = new JarFile(jar)) {
