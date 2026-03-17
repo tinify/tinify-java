@@ -1,3 +1,10 @@
+## 1.8.9
+* Upgraded dependencies (okio 3.12.0, gson 2.13.1, commons-codec 1.21.0)
+* Upgraded all Maven plugins to latest stable versions
+* Fixed OSGi Import-Package to exclude unresolvable packages (org.openjsse, dalvik, etc.)
+* Added OSGi bundle manifest integration test
+* Upgraded maven-bundle-plugin to 5.1.9 (Java 11 compatible)
+
 ## 1.8.8
 * Fixed transient dependencies for okhttp
 
