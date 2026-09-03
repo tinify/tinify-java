@@ -1,3 +1,7 @@
+## Unreleased
+
+* Added `Format` constants for the media types `convert` accepts, including JPEG XL (`image/jxl`).
+
 ## 1.8.9
 * Upgraded dependencies (okio 3.12.0, gson 2.13.1, commons-codec 1.21.0)
 * Upgraded all Maven plugins to latest stable versions
