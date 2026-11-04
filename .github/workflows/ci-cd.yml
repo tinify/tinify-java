@@ -150,6 +150,7 @@ jobs:
             -P release \
             --settings settings.xml \
             --no-transfer-progress \
+            --show-version \
             --batch-mode
       env:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
