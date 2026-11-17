@@ -82,7 +82,6 @@ public class Client {
             }
         }
 
-        builder.sslSocketFactory(TLSContext.socketFactory, TLSContext.trustManager);
         builder.connectTimeout(0, TimeUnit.SECONDS);
         builder.readTimeout(0, TimeUnit.SECONDS);
         builder.writeTimeout(0, TimeUnit.SECONDS);
