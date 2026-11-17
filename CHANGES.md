@@ -1,3 +1,10 @@
+## 2.0.0
+
+* **Breaking:** The client now uses the JVM's default trust store (system CA certificates) instead of a bundled CA bundle.
+  If you connect through a TLS-intercepting proxy or need extra root certificates, add them to the JVM trust store
+  (for example with `keytool` or `-Djavax.net.ssl.trustStore`).
+* **Breaking:** Removed the public `com.tinify.TLSContext` class and the bundled `cacert.pem` resource.
+
 ## 1.9.0
 
 * Added `Format` constants for the media types `convert` accepts, including JPEG XL (`image/jxl`).
